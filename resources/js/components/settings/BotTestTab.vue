@@ -49,7 +49,10 @@ function restart() {
 
         <Card class="flex h-[28rem] flex-col p-0">
             <div ref="scrollArea" class="flex-1 space-y-3 overflow-y-auto p-4">
-                <p v-if="!messages.length" class="text-sm text-sand-400">Escribe algo como lo haría un cliente para empezar la prueba.</p>
+                <div v-if="!messages.length" class="flex flex-col items-center gap-3 pt-8 text-center">
+                    <img :src="'/img/robot_tablet_apuntando.png'" alt="" class="h-28 w-auto select-none" draggable="false">
+                    <p class="text-sm text-sand-400">Escribe algo como lo haría un cliente para empezar la prueba.</p>
+                </div>
                 <div
                     v-for="(message, i) in messages"
                     :key="i"

@@ -5,7 +5,6 @@ import {
     CalendarDaysIcon,
     CalendarIcon,
     ExclamationTriangleIcon,
-    BuildingStorefrontIcon,
     SparklesIcon,
     UsersIcon,
     BoltIcon,
@@ -72,7 +71,7 @@ onMounted(async () => {
 
         <EmptyState
             v-else-if="notConfigured"
-            :icon="BuildingStorefrontIcon"
+            image="/img/robot_sentado_laptop.png"
             title="Tu negocio está siendo configurado"
             description="Te contactaremos pronto para activar tu recepcionista de WhatsApp. Si crees que esto es un error, escríbenos."
         />

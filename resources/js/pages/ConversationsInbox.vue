@@ -292,7 +292,7 @@ watch(() => route.query.status, () => {
 
                 <EmptyState
                     v-else-if="!detail"
-                    :icon="ChatBubbleLeftRightIcon"
+                    image="/img/robot_tablet_sonriendo.png"
                     title="Selecciona una conversación"
                     description="Elige un chat de la lista para ver el hilo completo."
                     class="m-auto border-0"

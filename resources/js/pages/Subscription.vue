@@ -84,6 +84,17 @@ const pendingPayment = computed(() => Boolean(subscription.value?.has_pending_pa
 const showCardForm = ref(false);
 const showPaymentSection = computed(() => !pendingPayment.value && (needsPayment.value || paymentDue.value || showCardForm.value));
 
+// Una sola mascota por pantalla, según el momento: saluda al llegar a pagar,
+// piensa mientras se confirma, corre cuando el plazo aprieta y celebra cuando
+// todo está al día.
+const mascot = computed(() => {
+    if (!info.value?.requires_subscription) return '/img/robot_pulgar_arriba.png';
+    if (pendingPayment.value) return '/img/robot_pensando_duda.png';
+    if (paymentDue.value) return '/img/robot_corriendo.png';
+    if (hasAccess.value) return '/img/robot_pulgar_arriba.png';
+    return '/img/robot_saludo_mano.png';
+});
+
 const daysLeftToPay = computed(() => {
     const until = subscription.value?.access_until;
     if (!until) return null;
@@ -336,9 +347,12 @@ async function resumeSubscription() {
             </div>
 
             <Card v-if="!info.requires_subscription">
-                <p class="text-sm text-sand-600">
-                    Tu negocio no tiene un cobro de suscripción configurado. Disfruta de RecepIA sin costo. 🎉
-                </p>
+                <div class="flex items-center gap-4">
+                    <img :src="mascot" alt="" class="h-20 w-auto shrink-0 select-none" draggable="false">
+                    <p class="text-sm text-sand-600">
+                        Tu negocio no tiene un cobro de suscripción configurado. Disfruta de RecepIA sin costo. 🎉
+                    </p>
+                </div>
             </Card>
 
             <template v-else>
@@ -349,9 +363,12 @@ async function resumeSubscription() {
                             <p class="text-xs font-semibold tracking-wide text-sand-500 uppercase">Plan mensual — {{ info.business_name }}</p>
                             <p class="mt-1 font-mono text-3xl text-brand-800">{{ money(info.price_cents) }} <span class="font-sans text-sm text-sand-500">COP / mes</span></p>
                         </div>
-                        <Badge v-if="subscription" :tone="statusLabels[subscription.status]?.tone ?? 'sand'">
-                            {{ statusLabels[subscription.status]?.text ?? subscription.status }}
-                        </Badge>
+                        <div class="flex items-center gap-4">
+                            <Badge v-if="subscription" :tone="statusLabels[subscription.status]?.tone ?? 'sand'">
+                                {{ statusLabels[subscription.status]?.text ?? subscription.status }}
+                            </Badge>
+                            <img :src="mascot" alt="" class="hidden h-20 w-auto shrink-0 select-none sm:block" draggable="false">
+                        </div>
                     </div>
 
                     <!-- Renovación vencida, dentro del plazo de gracia -->

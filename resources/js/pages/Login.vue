@@ -35,7 +35,7 @@ async function handleSubmit() {
         <!-- Formulario -->
         <div class="flex flex-col px-6 py-8 sm:px-12">
             <router-link :to="{ name: 'landing' }" class="flex items-center gap-2.5 self-start">
-                <BrandMark :size="30" />
+                <BrandMark :size="44" />
                 <span class="font-display text-xl font-semibold tracking-tight text-brand-950">recepia</span>
             </router-link>
 
@@ -116,7 +116,7 @@ async function handleSubmit() {
             </blockquote>
 
             <div class="relative flex items-center gap-2.5">
-                <BrandMark :size="26" variant="inverse" />
+                <BrandMark :size="40" variant="inverse" />
                 <span class="font-display text-lg font-semibold tracking-tight text-white">recepia</span>
             </div>
         </div>
