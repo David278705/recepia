@@ -5,6 +5,7 @@ import ServicesTab from '../components/settings/ServicesTab.vue';
 import HoursTab from '../components/settings/HoursTab.vue';
 import FaqsTab from '../components/settings/FaqsTab.vue';
 import BotTestTab from '../components/settings/BotTestTab.vue';
+import AccountTab from '../components/settings/AccountTab.vue';
 
 const tabs = [
     { key: 'profile', label: 'Perfil del negocio', component: ProfileTab },
@@ -12,6 +13,7 @@ const tabs = [
     { key: 'hours', label: 'Horarios', component: HoursTab },
     { key: 'faqs', label: 'Preguntas frecuentes', component: FaqsTab },
     { key: 'bot-test', label: 'Probar mi bot', component: BotTestTab },
+    { key: 'account', label: 'Cuenta', component: AccountTab },
 ];
 
 const active = ref('profile');

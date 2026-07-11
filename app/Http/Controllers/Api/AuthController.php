@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\Rules\Password as PasswordRule;
 use Illuminate\Validation\ValidationException;
 
 class AuthController extends Controller
@@ -53,6 +54,23 @@ class AuthController extends Controller
         $user['subscription_required'] = $this->subscriptionRequired($request);
 
         return response()->json(['user' => $user]);
+    }
+
+    /**
+     * Cambio de contraseña del usuario autenticado (pestaña Cuenta del panel).
+     */
+    public function updatePassword(Request $request): JsonResponse
+    {
+        $request->validate([
+            'current_password' => ['required', 'string', 'current_password'],
+            'password' => ['required', 'string', 'confirmed', PasswordRule::min(8)],
+        ], [
+            'current_password.current_password' => 'La contraseña actual no es correcta.',
+        ]);
+
+        $request->user()->forceFill(['password' => $request->input('password')])->save();
+
+        return response()->json(['message' => 'Contraseña actualizada.']);
     }
 
     /**

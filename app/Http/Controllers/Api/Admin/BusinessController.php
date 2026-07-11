@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\AdminBusinessResource;
 use App\Models\Business;
 use App\Models\User;
+use App\Notifications\SubscriptionPriceChangedNotification;
 use App\Notifications\WelcomeOwnerNotification;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -73,6 +74,8 @@ class BusinessController extends Controller
             $this->whatsappRules(),
         ));
 
+        $oldPriceCents = $business->monthly_price_cents;
+
         DB::transaction(function () use ($data, $request, $business) {
             $updates = $this->onlyBusinessFields($data);
 
@@ -95,7 +98,46 @@ class BusinessController extends Controller
             $business->fresh()->owner?->notify(new WelcomeOwnerNotification($business->fresh()));
         }
 
+        $this->handlePriceChange($business->fresh(), $oldPriceCents);
+
         return response()->json(['data' => new AdminBusinessResource($business->fresh(['owner', 'whatsappAccount', 'subscription']))]);
+    }
+
+    /**
+     * Un cambio de precio no puede cobrarse por cobro automático sin que el
+     * dueño lo acepte (información previa, Ley 1480): si paga con tarjeta, se
+     * detiene la renovación automática — conserva el acceso hasta el fin del
+     * periodo pagado y debe volver a suscribirse aceptando el precio nuevo.
+     * En todos los casos con suscripción vigente se le notifica el cambio.
+     */
+    protected function handlePriceChange(Business $business, ?int $oldPriceCents): void
+    {
+        $newPriceCents = $business->monthly_price_cents;
+
+        if ($newPriceCents === $oldPriceCents || $newPriceCents === null || $oldPriceCents === null) {
+            return;
+        }
+
+        $subscription = $business->subscription;
+
+        if (! $subscription || ! $subscription->grantsAccess()) {
+            return;
+        }
+
+        $stopAutoRenewal = $subscription->payment_method === 'tarjeta'
+            && $subscription->wompi_payment_source_id
+            && ! $subscription->cancel_at_period_end;
+
+        if ($stopAutoRenewal) {
+            $subscription->update(['cancel_at_period_end' => true, 'cancelled_at' => now()]);
+        }
+
+        $business->owner?->notify(new SubscriptionPriceChangedNotification(
+            $subscription->fresh(),
+            $oldPriceCents,
+            $newPriceCents,
+            $stopAutoRenewal,
+        ));
     }
 
     public function destroy(Business $business): JsonResponse

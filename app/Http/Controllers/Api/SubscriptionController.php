@@ -158,6 +158,17 @@ class SubscriptionController extends Controller
             ], 422);
         }
 
+        // Con el periodo vigente no hay nada que pagar todavía: los métodos
+        // manuales cobran de inmediato, así que solo se habilitan cuando el
+        // pago está pendiente (alta, renovación vencida o plazo de gracia).
+        $current = $business->subscription;
+
+        if ($current && $current->grantsAccess() && ! $current->isPaymentDue()) {
+            return response()->json([
+                'message' => 'Tu mes ya está pagado hasta el '.$current->current_period_ends_at?->translatedFormat('j \d\e F').'. Podrás hacer el siguiente pago cuando venza.',
+            ], 422);
+        }
+
         // Evita pagos dobles, pero sin dejar al dueño bloqueado si una
         // transacción vieja se quedó en PENDING (p. ej. un PSE abandonado).
         $freshPending = $business->subscription?->payments()
@@ -290,7 +301,15 @@ class SubscriptionController extends Controller
             return response()->json(['message' => 'No hay una cancelación programada que revertir.'], 422);
         }
 
-        $subscription->update(['cancel_at_period_end' => false, 'cancelled_at' => null]);
+        // Reanudar es una aceptación explícita del plan tal como se muestra en
+        // el panel: sincroniza el precio de los próximos cobros con el precio
+        // vigente del negocio (p. ej. tras un cambio de precio que detuvo la
+        // renovación automática).
+        $subscription->update([
+            'cancel_at_period_end' => false,
+            'cancelled_at' => null,
+            'price_cents' => $business->monthly_price_cents ?? $subscription->price_cents,
+        ]);
 
         Notification::send(User::superAdmins(), new AdminSubscriptionAlert('cancelacion_reanudada', $business));
 

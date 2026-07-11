@@ -1,5 +1,5 @@
 <script setup>
-import { HomeIcon, ChatBubbleLeftRightIcon, CalendarDaysIcon, Cog6ToothIcon, CreditCardIcon } from '@heroicons/vue/24/outline';
+import { HomeIcon, ChatBubbleLeftRightIcon, CalendarDaysIcon, Cog6ToothIcon, CreditCardIcon, LifebuoyIcon } from '@heroicons/vue/24/outline';
 import SidebarLayout from './SidebarLayout.vue';
 
 const navItems = [
@@ -8,6 +8,7 @@ const navItems = [
     { name: 'appointments', label: 'Citas', icon: CalendarDaysIcon },
     { name: 'settings', label: 'Configuración', icon: Cog6ToothIcon },
     { name: 'subscription', label: 'Suscripción', icon: CreditCardIcon },
+    { name: 'support', label: 'Soporte', icon: LifebuoyIcon },
 ];
 </script>
 

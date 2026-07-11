@@ -757,9 +757,11 @@ const faqs = [
                         <p class="mt-4 text-sand-500">
                             ¿Tienes otra?
                             <a
-                                href="mailto:hola@recepia.app"
+                                href="https://wa.me/573024720171?text=Hola%2C%20tengo%20una%20pregunta%20sobre%20Recepia"
+                                target="_blank"
+                                rel="noopener"
                                 class="font-medium text-brand-700 hover:underline"
-                                >Escríbenos</a
+                                >Escríbenos por WhatsApp</a
                             >
                             — respondemos rápido. Es lo nuestro.
                         </p>
@@ -818,10 +820,12 @@ const faqs = [
                         class="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row"
                     >
                         <a
-                            href="mailto:hola@recepia.app?subject=Quiero%20conocer%20Recepia"
+                            href="https://wa.me/573024720171?text=Hola%2C%20quiero%20solicitar%20una%20demo%20de%20Recepia"
+                            target="_blank"
+                            rel="noopener"
                             class="inline-flex items-center justify-center rounded-xl bg-amber-500 px-7 py-3.5 text-base font-semibold text-brand-950 shadow-lg transition hover:bg-amber-400"
                         >
-                            Escríbenos: hola@recepia.app
+                            Escríbenos por WhatsApp
                         </a>
                         <router-link
                             :to="{ name: 'login' }"
@@ -859,6 +863,16 @@ const faqs = [
                             :to="{ name: 'login' }"
                             class="text-sm text-brand-100/70 transition hover:text-white"
                             >Iniciar sesión</router-link
+                        >
+                        <router-link
+                            :to="{ name: 'terms' }"
+                            class="text-sm text-brand-100/70 transition hover:text-white"
+                            >Términos y condiciones</router-link
+                        >
+                        <router-link
+                            :to="{ name: 'privacy' }"
+                            class="text-sm text-brand-100/70 transition hover:text-white"
+                            >Privacidad</router-link
                         >
                     </nav>
                 </div>

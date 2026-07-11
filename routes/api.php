@@ -14,17 +14,23 @@ use App\Http\Controllers\Api\ContactController;
 use App\Http\Controllers\Api\ConversationController;
 use App\Http\Controllers\Api\DashboardController;
 use App\Http\Controllers\Api\FaqController;
+use App\Http\Controllers\Api\PasswordResetController;
 use App\Http\Controllers\Api\ServiceController;
+use App\Http\Controllers\Api\Admin\SupportTicketController as AdminSupportTicketController;
 use App\Http\Controllers\Api\SubscriptionController;
+use App\Http\Controllers\Api\SupportTicketController;
 use App\Http\Controllers\Webhooks\WhatsAppWebhookController;
 use App\Http\Controllers\Webhooks\WompiWebhookController;
 use Illuminate\Support\Facades\Route;
 
 Route::post('login', [AuthController::class, 'login']);
+Route::post('forgot-password', [PasswordResetController::class, 'forgot'])->middleware('throttle:5,1');
+Route::post('reset-password', [PasswordResetController::class, 'reset'])->middleware('throttle:5,1');
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('logout', [AuthController::class, 'logout']);
     Route::get('user', [AuthController::class, 'user']);
+    Route::put('password', [AuthController::class, 'updatePassword']);
     Route::post('stop-impersonating', [ImpersonationController::class, 'stop']);
 
     // Gestión de la suscripción: accesible sin suscripción activa (es el
@@ -37,6 +43,12 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('subscription/card', [SubscriptionController::class, 'deleteCard']);
     Route::post('subscription/cancel', [SubscriptionController::class, 'cancel']);
     Route::post('subscription/resume', [SubscriptionController::class, 'resume']);
+
+    // Soporte: fuera del paywall para poder reportar incluso problemas de pago.
+    Route::get('support-tickets', [SupportTicketController::class, 'index']);
+    Route::post('support-tickets', [SupportTicketController::class, 'store'])->middleware('throttle:10,1');
+    Route::get('support-tickets/{supportTicket}', [SupportTicketController::class, 'show']);
+    Route::post('support-tickets/{supportTicket}/replies', [SupportTicketController::class, 'reply'])->middleware('throttle:20,1');
 
     // Panel del owner: requiere suscripción activa (paywall).
     Route::middleware('subscription')->group(function () {
@@ -69,6 +81,11 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::apiResource('businesses', AdminBusinessController::class);
         Route::get('available-owners', [AvailableOwnersController::class, 'index']);
         Route::post('businesses/{business}/impersonate', [ImpersonationController::class, 'start']);
+
+        Route::get('support-tickets', [AdminSupportTicketController::class, 'index']);
+        Route::get('support-tickets/{supportTicket}', [AdminSupportTicketController::class, 'show']);
+        Route::post('support-tickets/{supportTicket}/replies', [AdminSupportTicketController::class, 'reply']);
+        Route::put('support-tickets/{supportTicket}/status', [AdminSupportTicketController::class, 'updateStatus']);
 
         Route::get('metrics', [MetricsController::class, 'show']);
         Route::get('system-health', [SystemHealthController::class, 'show']);

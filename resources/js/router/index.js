@@ -15,6 +15,28 @@ const routes = [
         meta: { guestOnly: true },
     },
     {
+        path: '/terminos',
+        name: 'terms',
+        component: () => import('../pages/Terms.vue'),
+    },
+    {
+        path: '/privacidad',
+        name: 'privacy',
+        component: () => import('../pages/Privacy.vue'),
+    },
+    {
+        path: '/forgot-password',
+        name: 'forgot-password',
+        component: () => import('../pages/ForgotPassword.vue'),
+        meta: { guestOnly: true },
+    },
+    {
+        path: '/reset-password',
+        name: 'reset-password',
+        component: () => import('../pages/ResetPassword.vue'),
+        meta: { guestOnly: true },
+    },
+    {
         path: '/dashboard',
         name: 'dashboard',
         component: () => import('../pages/DashboardHome.vue'),
@@ -39,6 +61,12 @@ const routes = [
         meta: { requiresAuth: true },
     },
     {
+        path: '/support',
+        name: 'support',
+        component: () => import('../pages/Support.vue'),
+        meta: { requiresAuth: true },
+    },
+    {
         path: '/subscription',
         name: 'subscription',
         component: () => import('../pages/Subscription.vue'),
@@ -60,6 +88,12 @@ const routes = [
         path: '/admin/businesses/:id/edit',
         name: 'admin.businesses.edit',
         component: () => import('../pages/admin/AdminBusinessesIndex.vue'),
+        meta: { requiresAuth: true, requiresAdmin: true },
+    },
+    {
+        path: '/admin/support',
+        name: 'admin.support',
+        component: () => import('../pages/admin/AdminSupport.vue'),
         meta: { requiresAuth: true, requiresAdmin: true },
     },
     {
@@ -107,7 +141,9 @@ router.beforeEach(async (to) => {
 
     // Paywall: un owner sin suscripción activa solo puede ver la página de
     // suscripción hasta completar el pago.
-    if (to.meta.requiresAuth && auth.user?.subscription_required && to.name !== 'subscription') {
+    // Soporte queda accesible incluso sin suscripción activa: un usuario con
+    // problemas de pago debe poder reportarlos.
+    if (to.meta.requiresAuth && auth.user?.subscription_required && !['subscription', 'support'].includes(to.name)) {
         return { name: 'subscription' };
     }
 

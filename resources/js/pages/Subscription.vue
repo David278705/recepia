@@ -83,6 +83,9 @@ const pendingPayment = computed(() => Boolean(subscription.value?.has_pending_pa
 // cobro automático teniendo el periodo vigente (showCardForm).
 const showCardForm = ref(false);
 const showPaymentSection = computed(() => !pendingPayment.value && (needsPayment.value || paymentDue.value || showCardForm.value));
+// Con el periodo vigente no hay nada que pagar: la sección solo sirve para
+// guardar/cambiar la tarjeta del cobro automático (sin cobro inmediato).
+const cardOnly = computed(() => showCardForm.value && !needsPayment.value && !paymentDue.value);
 
 // Una sola mascota por pantalla, según el momento: saluda al llegar a pagar,
 // piensa mientras se confirma, corre cuando el plazo aprieta y celebra cuando
@@ -451,10 +454,14 @@ async function resumeSubscription() {
 
                 <!-- Cómo quieres pagar -->
                 <Card v-if="showPaymentSection" class="mb-4">
-                    <h3 class="mb-1 font-display text-sm font-semibold text-brand-900">¿Cómo quieres pagar?</h3>
-                    <p class="mb-4 text-xs text-sand-500">Con tarjeta el cobro es automático cada mes; con Nequi, DaviPlata o PSE pagas mes a mes.</p>
+                    <h3 class="mb-1 font-display text-sm font-semibold text-brand-900">{{ cardOnly ? 'Tarjeta para el cobro automático' : '¿Cómo quieres pagar?' }}</h3>
+                    <p class="mb-4 text-xs text-sand-500">
+                        {{ cardOnly
+                            ? 'Hoy no se cobra nada: tu mes ya está pagado. La tarjeta queda guardada y el cobro automático empieza cuando venza tu periodo.'
+                            : 'Con tarjeta el cobro es automático cada mes; con Nequi, DaviPlata o PSE pagas mes a mes.' }}
+                    </p>
 
-                    <div class="mb-5 grid gap-3 sm:grid-cols-2">
+                    <div v-if="!cardOnly" class="mb-5 grid gap-3 sm:grid-cols-2">
                         <button
                             v-for="m in methods"
                             :key="m.key"
@@ -589,7 +596,11 @@ async function resumeSubscription() {
                         <label class="flex items-start gap-2 text-xs text-sand-600">
                             <input v-model="accepted" type="checkbox" class="mt-0.5">
                             <span>
-                                {{ method === 'tarjeta' ? `Acepto el cobro mensual recurrente de ${money(info.price_cents)}` : `Acepto pagar ${money(info.price_cents)} por este mes` }} y los
+                                {{ method === 'tarjeta' ? `Acepto el cobro mensual recurrente de ${money(info.price_cents)}` : `Acepto pagar ${money(info.price_cents)} por este mes` }}, los
+                                <router-link :to="{ name: 'terms' }" target="_blank" class="text-brand-700 underline">términos y condiciones</router-link>
+                                y la
+                                <router-link :to="{ name: 'privacy' }" target="_blank" class="text-brand-700 underline">política de datos personales</router-link>
+                                de Recepia, y los
                                 <a href="https://wompi.co/terminos-y-condiciones/" target="_blank" rel="noopener" class="text-brand-700 underline">términos y condiciones de Wompi</a>.
                             </span>
                         </label>

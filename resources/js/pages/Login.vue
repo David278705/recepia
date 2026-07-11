@@ -43,6 +43,10 @@ async function handleSubmit() {
                 <h1 class="font-display text-3xl font-semibold tracking-tight text-brand-950">Inicia sesión</h1>
                 <p class="mt-2 text-sm text-sand-500">Entra al panel de tu negocio.</p>
 
+                <p v-if="route.query.reset" class="mt-4 rounded-lg bg-brand-50 px-4 py-3 text-sm text-brand-800">
+                    Tu contraseña fue actualizada. Inicia sesión con la nueva.
+                </p>
+
                 <form class="mt-8 flex flex-col gap-5" @submit.prevent="handleSubmit">
                     <div>
                         <label for="email" class="mb-1.5 block text-sm font-medium text-sand-700">Correo</label>
@@ -68,6 +72,12 @@ async function handleSubmit() {
                             class="w-full rounded-lg border border-sand-300 px-3.5 py-2.5 text-sm text-sand-900 transition focus:border-brand-600 focus:ring-2 focus:ring-brand-100 focus:outline-none"
                         >
                         <p v-if="errors.password" class="mt-1.5 text-xs text-amber-800">{{ errors.password[0] }}</p>
+                        <router-link
+                            :to="{ name: 'forgot-password' }"
+                            class="mt-1.5 inline-block text-xs font-medium text-brand-700 hover:underline"
+                        >
+                            ¿Olvidaste tu contraseña?
+                        </router-link>
                     </div>
 
                     <button
@@ -81,7 +91,7 @@ async function handleSubmit() {
 
                 <p class="mt-8 text-sm text-sand-500">
                     ¿Aún no tienes cuenta?
-                    <a href="mailto:hola@recepia.app?subject=Quiero%20conocer%20Recepia" class="font-medium text-brand-700 hover:underline">Escríbenos</a>
+                    <a href="https://wa.me/573024720171?text=Hola%2C%20quiero%20crear%20una%20cuenta%20en%20Recepia" target="_blank" rel="noopener" class="font-medium text-brand-700 hover:underline">Escríbenos por WhatsApp</a>
                     y te acompañamos en el alta.
                 </p>
             </div>
