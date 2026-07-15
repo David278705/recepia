@@ -16,6 +16,7 @@ class Service extends Model
         'description',
         'duration_minutes',
         'price',
+        'price_note',
         'active',
     ];
 

@@ -25,6 +25,13 @@ const routes = [
         component: () => import('../pages/Privacy.vue'),
     },
     {
+        // Pública: el dueño entra por link firmado (?token=) sin cuenta; el
+        // super_admin llega con ?business= y su sesión.
+        path: '/connect-whatsapp',
+        name: 'connect-whatsapp',
+        component: () => import('../pages/ConnectWhatsApp.vue'),
+    },
+    {
         path: '/forgot-password',
         name: 'forgot-password',
         component: () => import('../pages/ForgotPassword.vue'),
@@ -46,6 +53,12 @@ const routes = [
         path: '/conversations',
         name: 'conversations',
         component: () => import('../pages/ConversationsInbox.vue'),
+        meta: { requiresAuth: true },
+    },
+    {
+        path: '/requests',
+        name: 'requests',
+        component: () => import('../pages/RequestsInbox.vue'),
         meta: { requiresAuth: true },
     },
     {

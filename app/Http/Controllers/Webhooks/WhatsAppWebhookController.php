@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Webhooks;
 
 use App\Http\Controllers\Controller;
 use App\Jobs\ProcessIncomingMessage;
+use App\Jobs\ProcessPartnerSignup;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Log;
@@ -33,9 +34,38 @@ class WhatsAppWebhookController extends Controller
             return response('Forbidden', 403);
         }
 
-        ProcessIncomingMessage::dispatch($request->all());
+        $payload = $request->all();
+
+        $this->dispatchPartnerSignups($payload);
+
+        ProcessIncomingMessage::dispatch($payload);
 
         return response('EVENT_RECEIVED', 200);
+    }
+
+    /**
+     * account_update con PARTNER_ADDED = alguien completó el Embedded Signup
+     * por el link genérico alojado por Meta: se aprovisiona en cola buscando
+     * el negocio por número de teléfono.
+     */
+    protected function dispatchPartnerSignups(array $payload): void
+    {
+        foreach ($payload['entry'] ?? [] as $entry) {
+            foreach ($entry['changes'] ?? [] as $change) {
+                $value = $change['value'] ?? [];
+
+                if (($change['field'] ?? '') !== 'account_update' || ($value['event'] ?? '') !== 'PARTNER_ADDED') {
+                    continue;
+                }
+
+                $wabaId = $value['waba_info']['waba_id'] ?? null;
+                $ownerBusinessId = $value['waba_info']['owner_business_id'] ?? null;
+
+                if ($wabaId && $ownerBusinessId) {
+                    ProcessPartnerSignup::dispatch((string) $wabaId, (string) $ownerBusinessId);
+                }
+            }
+        }
     }
 
     protected function hasValidSignature(Request $request): bool

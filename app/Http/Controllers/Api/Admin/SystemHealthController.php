@@ -12,7 +12,7 @@ class SystemHealthController extends Controller
     public function show(): JsonResponse
     {
         $businesses = Business::query()
-            ->with('whatsappAccount:id,business_id,phone_e164,mode,connection_status')
+            ->with('whatsappAccount:id,business_id,phone_e164,mode,connection_status,last_checked_at')
             ->withMax('conversations as last_activity_at', 'last_activity_at')
             ->withCount(['conversations as pending_escalations' => fn ($q) => $q->where('status', 'escalada')])
             ->orderBy('name')
@@ -24,6 +24,7 @@ class SystemHealthController extends Controller
                 'whatsapp_phone' => $business->whatsappAccount?->phone_e164,
                 'whatsapp_mode' => $business->whatsappAccount?->mode,
                 'whatsapp_connection' => $business->whatsappAccount?->connection_status,
+                'whatsapp_last_checked_at' => $business->whatsappAccount?->last_checked_at?->toIso8601String(),
                 'last_activity_at' => $business->last_activity_at,
                 'pending_escalations' => $business->pending_escalations,
             ]);

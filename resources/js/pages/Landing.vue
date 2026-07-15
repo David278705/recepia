@@ -50,12 +50,12 @@ const steps = [
     {
         title: "Recepia atiende",
         description:
-            "Responde al instante, propone horarios reales y agenda citas. Cuando algo se sale del guion, te lo pasa a ti.",
+            "Responde al instante y hace lo que tu negocio necesite: agenda citas con horarios reales, toma pedidos o registra cotizaciones. Cuando algo se sale del guion, te lo pasa a ti.",
     },
     {
         title: "Tú supervisas",
         description:
-            "Desde el panel ves cada conversación, tomas el control cuando quieres y mides cuántas citas te consiguió el bot.",
+            "Desde el panel ves cada conversación, tomas el control cuando quieres y revisas las citas, pedidos y solicitudes que el bot te consiguió.",
     },
 ];
 
@@ -93,6 +93,10 @@ const faqs = [
     {
         q: "¿Y si yo le escribo al cliente desde mi celular?",
         a: "Recepia lo detecta y pausa el bot en esa conversación durante un rato, para que nunca haya dos respuestas cruzadas. Cuando terminas, retoma solo.",
+    },
+    {
+        q: "¿Solo sirve para agendar citas?",
+        a: "No. Le activamos a tu recepcionista lo que tu negocio necesite: agendar citas contra tu calendario, tomar pedidos con entrega a domicilio o para recoger, o registrar solicitudes de cotización para que tú las respondas. Todo llega a tu panel y a tu correo.",
     },
     {
         q: "¿Necesito saber de tecnología?",
@@ -236,9 +240,9 @@ const faqs = [
                     >
                         Recepia atiende el WhatsApp de tu negocio como lo haría
                         tu mejor recepcionista: responde en segundos, agenda
-                        citas contra tu calendario real y te pasa la
-                        conversación cuando de verdad se necesita una persona.
-                        En tu mismo número de siempre.
+                        citas contra tu calendario real, toma pedidos, registra
+                        cotizaciones y te pasa la conversación cuando de verdad
+                        se necesita una persona. En tu mismo número de siempre.
                     </p>
 
                     <div class="mt-9 flex flex-col gap-3 sm:flex-row">
@@ -360,8 +364,9 @@ const faqs = [
             <p
                 class="mx-auto max-w-6xl px-5 pt-14 text-center text-xs font-medium tracking-[0.18em] text-sand-400 uppercase sm:px-8"
             >
-                Hecho para negocios que viven de su agenda — barberías ·
-                clínicas estéticas · consultorios · restaurantes · talleres
+                Hecho para negocios que atienden por WhatsApp — barberías ·
+                clínicas estéticas · consultorios · restaurantes · talleres ·
+                tiendas · veterinarias
             </p>
 
             <!-- Lo que hace por ti -->
@@ -537,11 +542,13 @@ const faqs = [
                             <p
                                 class="mt-4 text-lg leading-relaxed text-sand-600"
                             >
-                                Antes de proponer un horario, Recepia consulta
-                                la disponibilidad real de tu calendario — tus
+                                Si tu negocio trabaja con citas, antes de
+                                proponer un horario Recepia consulta la
+                                disponibilidad real de tu calendario — tus
                                 horarios de atención menos las citas que ya
-                                existen. Las citas del bot y las que agendas a
-                                mano viven en el mismo lugar.
+                                existen. ¿Lo tuyo son los pedidos o las
+                                cotizaciones? También los toma y te los deja
+                                listos en el panel.
                             </p>
                             <ul class="mt-6 flex flex-col gap-3">
                                 <li

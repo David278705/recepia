@@ -12,7 +12,8 @@ const errors = ref({});
 
 const form = reactive({
     name: '',
-    type: 'otro',
+    type: '',
+    description: '',
     address: '',
     phone: '',
     timezone: '',
@@ -24,7 +25,8 @@ onMounted(async () => {
     const { data } = await api.get('/business');
     const b = data.data;
     form.name = b.name;
-    form.type = b.type ?? 'otro';
+    form.type = b.type ?? '';
+    form.description = b.description ?? '';
     form.address = b.address ?? '';
     form.phone = b.phone ?? '';
     form.timezone = b.timezone ?? '';
@@ -67,15 +69,40 @@ async function handleSubmit() {
 
                 <div>
                     <label class="mb-1 block text-sm font-medium text-sand-700">Tipo de negocio</label>
-                    <select
+                    <input
                         v-model="form.type"
+                        type="text"
+                        list="profile-business-types"
+                        maxlength="100"
+                        required
+                        placeholder="barbería, veterinaria, taller…"
                         class="w-full rounded-lg border border-sand-200 px-3 py-2 text-sm focus:border-brand-500 focus:outline-none"
                     >
-                        <option value="barberia">Barbería</option>
-                        <option value="clinica">Clínica estética</option>
-                        <option value="restaurante">Restaurante</option>
-                        <option value="otro">Otro</option>
-                    </select>
+                    <datalist id="profile-business-types">
+                        <option value="barbería" />
+                        <option value="peluquería / salón de belleza" />
+                        <option value="clínica estética" />
+                        <option value="consultorio médico" />
+                        <option value="odontología" />
+                        <option value="veterinaria" />
+                        <option value="restaurante" />
+                        <option value="taller mecánico" />
+                        <option value="spa" />
+                        <option value="estudio de tatuajes" />
+                    </datalist>
+                    <p v-if="errors.type" class="mt-1 text-xs text-amber-700">{{ errors.type[0] }}</p>
+                </div>
+
+                <div>
+                    <label class="mb-1 block text-sm font-medium text-sand-700">Descripción del negocio</label>
+                    <textarea
+                        v-model="form.description"
+                        rows="3"
+                        maxlength="2000"
+                        placeholder="Qué hace tu negocio, qué lo distingue… Tu recepcionista usa esto para presentarte mejor."
+                        class="w-full rounded-lg border border-sand-200 px-3 py-2 text-sm focus:border-brand-500 focus:outline-none"
+                    />
+                    <p v-if="errors.description" class="mt-1 text-xs text-amber-700">{{ errors.description[0] }}</p>
                 </div>
 
                 <div>

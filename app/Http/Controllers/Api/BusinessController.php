@@ -34,7 +34,8 @@ class BusinessController extends Controller
 
         $data = $request->validate([
             'name' => ['sometimes', 'required', 'string', 'max:255'],
-            'type' => ['sometimes', 'required', 'in:barberia,clinica,restaurante,otro'],
+            'type' => ['sometimes', 'required', 'string', 'max:100'],
+            'description' => ['sometimes', 'nullable', 'string', 'max:2000'],
             'address' => ['sometimes', 'nullable', 'string', 'max:255'],
             'phone' => ['sometimes', 'nullable', 'string', 'max:32'],
             'timezone' => ['sometimes', 'nullable', 'string', 'max:255'],

@@ -176,7 +176,8 @@ class BusinessController extends Controller
 
         return [
             'name' => $rule(['required', 'string', 'max:255']),
-            'type' => $rule(['required', 'in:barberia,clinica,restaurante,otro']),
+            'type' => $rule(['required', 'string', 'max:100']),
+            'description' => ['sometimes', 'nullable', 'string', 'max:2000'],
             'address' => $rule(['nullable', 'string', 'max:255']),
             'phone' => $rule(['nullable', 'string', 'max:32']),
             'timezone' => $rule(['nullable', 'string', 'max:255']),
@@ -185,6 +186,11 @@ class BusinessController extends Controller
             // Vacío = el negocio no paga (piloto/cortesía). Mínimo de Wompi:
             // $1.500 COP por transacción.
             'monthly_price' => $rule(['nullable', 'integer', 'min:1500', 'max:100000000']),
+            // Respuestas del bot por conversación cada 24 h; 0 = sin límite.
+            'daily_message_limit' => ['sometimes', 'integer', 'min:0', 'max:10000'],
+            // Qué sabe hacer el recepcionista de este negocio.
+            'capabilities' => ['sometimes', 'array', 'min:0'],
+            'capabilities.*' => [Rule::in(Business::CAPABILITIES)],
             'tone' => $rule(['required', 'in:formal,cercano']),
             'agent_model' => $rule(['nullable', 'string', 'max:255']),
             'extra_instructions' => $rule(['nullable', 'string']),
@@ -240,8 +246,9 @@ class BusinessController extends Controller
     protected function onlyBusinessFields(array $data): array
     {
         $fields = collect($data)->only([
-            'name', 'type', 'address', 'phone', 'timezone',
+            'name', 'type', 'description', 'address', 'phone', 'timezone',
             'status', 'tone', 'agent_model', 'extra_instructions',
+            'daily_message_limit', 'capabilities',
         ])->all();
 
         if (array_key_exists('monthly_price', $data)) {

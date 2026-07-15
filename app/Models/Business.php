@@ -18,15 +18,41 @@ class Business extends Model
         'name',
         'slug',
         'type',
+        'description',
         'address',
         'phone',
         'timezone',
         'status',
         'monthly_price_cents',
+        'daily_message_limit',
+        'capabilities',
         'tone',
         'agent_model',
         'extra_instructions',
     ];
+
+    public const CAPABILITIES = ['agendar', 'pedidos', 'cotizar'];
+
+    protected function casts(): array
+    {
+        return ['capabilities' => 'array'];
+    }
+
+    /**
+     * Capacidades activas del recepcionista. NULL en la BD = ['agendar']
+     * (comportamiento histórico de los negocios existentes).
+     *
+     * @return list<string>
+     */
+    public function activeCapabilities(): array
+    {
+        return $this->capabilities ?? ['agendar'];
+    }
+
+    public function hasCapability(string $capability): bool
+    {
+        return in_array($capability, $this->activeCapabilities(), true);
+    }
 
     protected static function booted(): void
     {
@@ -93,6 +119,11 @@ class Business extends Model
     public function messages(): HasMany
     {
         return $this->hasMany(Message::class);
+    }
+
+    public function customerRequests(): HasMany
+    {
+        return $this->hasMany(CustomerRequest::class);
     }
 
     public function escalations(): HasMany

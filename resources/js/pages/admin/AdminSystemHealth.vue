@@ -83,6 +83,9 @@ onMounted(async () => {
                                 </td>
                                 <td class="py-2 pr-4">
                                     <Badge :tone="connectionTone(business.whatsapp_connection)">{{ business.whatsapp_connection || 'sin cuenta' }}</Badge>
+                                    <p v-if="business.whatsapp_last_checked_at" class="mt-0.5 text-[11px] text-sand-400">
+                                        verificada {{ relativeTime(business.whatsapp_last_checked_at) }}
+                                    </p>
                                 </td>
                                 <td class="py-2 pr-4 text-sand-500">{{ relativeTime(business.last_activity_at) }}</td>
                                 <td class="py-2 text-right font-mono" :class="business.pending_escalations > 0 ? 'text-amber-700' : 'text-sand-700'">

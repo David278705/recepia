@@ -263,3 +263,56 @@ worker de colas persistente (`php artisan queue:work`); no hay comandos
 programados (`schedule:run`) en este MVP.
 #   r e c e p i a  
  
+## Fase 7 — Embedded Signup con coexistencia
+
+Conectar el WhatsApp de un cliente ahora es un botón: el flujo oficial de Meta
+(popup de Facebook Login for Business) con soporte de coexistencia. El alta
+manual sigue disponible en el panel como "Alta manual / avanzada".
+
+### Trámites externos (una sola vez, los hace el super_admin)
+
+1. **Verificación del negocio** del Meta Business Manager:
+   business.facebook.com → Configuración → Centro de seguridad → Iniciar verificación.
+2. **Acceso avanzado** a `whatsapp_business_management` y
+   `whatsapp_business_messaging`: developers.facebook.com → tu app → Revisión de app →
+   Permisos y funciones (requiere screencast del flujo).
+3. **Configuración de Facebook Login for Business**: developers.facebook.com →
+   tu app → Facebook Login for Business → Configuraciones → crear una con los
+   permisos de WhatsApp; copia el `config_id` resultante a `META_ES_CONFIG_ID`.
+
+Variables: `META_APP_ID`, `META_APP_SECRET` (o se reutiliza
+`WHATSAPP_APP_SECRET`), `META_GRAPH_VERSION`, `META_ES_CONFIG_ID`.
+
+### Cómo se conecta un negocio
+
+- Desde el panel: Admin → editar negocio → "Conectar WhatsApp (Embedded
+  Signup)" → *Conectar aquí mismo*, o *Generar link para el dueño (48 h)* y
+  enviárselo — el dueño lo abre en su computador con su propia sesión de
+  Facebook, sin necesitar usuario en la plataforma.
+- El backend canjea el code por el business token (encriptado), suscribe los
+  webhooks de la WABA, detecta el modo (coexistencia vs dedicado — en
+  coexistencia el registro del número se omite porque ya está registrado en la
+  app) y deja bitácora por paso en `onboarding_logs`.
+
+### Checklist de elegibilidad del número del cliente
+
+- App **WhatsApp Business** v2.24.17 o superior, con el número activo ~7+ días.
+- El número no debe haber estado en otra WABA recientemente (enfriamiento 1-2 meses).
+- El **nombre del negocio en la app debe ser el definitivo antes de conectar**
+  (queda bloqueado después).
+- Tener a mano: sesión de Facebook con acceso al negocio y el celular para
+  escanear el QR al final del popup.
+
+### Guion de onboarding asistido
+
+1. Verifica el checklist de elegibilidad con el dueño.
+2. Genera el link firmado desde el panel y envíaselo (o hazlo en tu equipo con
+   "Conectar aquí mismo" compartiendo pantalla).
+3. El dueño: inicia sesión en Facebook → selecciona/crea su portafolio de
+   negocio → elige "usar mi número actual de la app" → verifica → escanea el QR.
+4. La pantalla muestra el progreso (canje, webhooks, verificación) y el estado
+   final; al completarse llega un correo al super_admin.
+5. Prueba de fuego: envía un mensaje al número y confirma que el bot responde.
+6. Recuérdale al dueño abrir su app WhatsApp Business al menos cada 2 semanas
+   (si no, la coexistencia se cae; el comando diario
+   `recepia:verificar-conexiones` lo detecta y alerta por correo).

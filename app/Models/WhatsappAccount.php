@@ -16,15 +16,23 @@ class WhatsappAccount extends Model
         'waba_id',
         'phone_e164',
         'access_token',
+        'two_step_pin',
         'verify_token',
+        'verified_name',
+        'quality_rating',
         'mode',
         'connection_status',
+        'connected_at',
+        'last_checked_at',
     ];
 
     protected function casts(): array
     {
         return [
             'access_token' => 'encrypted',
+            'two_step_pin' => 'encrypted',
+            'connected_at' => 'datetime',
+            'last_checked_at' => 'datetime',
         ];
     }
 }

@@ -46,8 +46,10 @@ class ServiceController extends Controller
         return [
             'name' => $rule(['required', 'string', 'max:255']),
             'description' => $rule(['nullable', 'string']),
-            'duration_minutes' => $rule(['required', 'integer', 'min:5']),
+            // NULL = servicio informativo (no agendable por el bot).
+            'duration_minutes' => $rule(['nullable', 'integer', 'min:5']),
             'price' => $rule(['nullable', 'numeric', 'min:0']),
+            'price_note' => ['sometimes', 'nullable', 'string', 'max:100'],
             'active' => ['sometimes', 'boolean'],
         ];
     }

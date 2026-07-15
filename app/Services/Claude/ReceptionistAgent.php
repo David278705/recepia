@@ -131,7 +131,7 @@ class ReceptionistAgent
     protected function runToolLoop(Business $business, string $system, array $messages, ?Conversation $conversation, bool $dryRun): array
     {
         $client = new ClaudeClient(model: $business->agent_model);
-        $tools = $this->toolDefinitions();
+        $tools = $this->toolDefinitions($business);
 
         $finalText = null;
         $inputTokens = 0;
@@ -219,13 +219,19 @@ class ReceptionistAgent
 
 
         $services = $business->services()->where('active', true)->get()
-            ->map(fn (Service $s) => sprintf(
-                '- %s (id %d, %d min): %s',
-                $s->name,
-                $s->id,
-                $s->duration_minutes,
-                $s->price !== null ? '$'.number_format((float) $s->price, 0, ',', '.') : 'el precio te lo confirma el equipo'
-            ))->implode("\n");
+            ->map(function (Service $s) {
+                $duration = $s->duration_minutes !== null
+                    ? "{$s->duration_minutes} min"
+                    : 'no se agenda por este canal';
+
+                $price = match (true) {
+                    $s->price !== null => '$'.number_format((float) $s->price, 0, ',', '.').($s->price_note ? " ({$s->price_note})" : ''),
+                    $s->price_note !== null => $s->price_note,
+                    default => 'el precio te lo confirma el equipo',
+                };
+
+                return "- {$s->name} (id {$s->id}, {$duration}): {$price}";
+            })->implode("\n");
 
         $hours = $business->businessHours()->where('active', true)->orderBy('day_of_week')->get()
             ->groupBy('day_of_week')
@@ -239,10 +245,15 @@ class ReceptionistAgent
         $hours = $hours ?: 'Sin horarios configurados.';
         $faqs = $faqs ?: 'Sin preguntas frecuentes configuradas.';
         $extra = $business->extra_instructions ?: 'Ninguna.';
+        $description = $business->description ?: 'Sin descripción adicional.';
+        $capabilityRules = $this->capabilityRules($business);
 
         return <<<PROMPT
-            Eres el asistente de WhatsApp de {$business->name}, un negocio de tipo {$business->type} ubicado en {$business->address}.
+            Eres el asistente de WhatsApp de {$business->name}, un negocio de tipo "{$business->type}" ubicado en {$business->address}.
             Tu tono es {$tone}.
+
+            SOBRE EL NEGOCIO:
+            {$description}
 
             {$temporalContext}
 
@@ -260,11 +271,35 @@ class ReceptionistAgent
 
             REGLAS (no las rompas nunca):
             - Responde SOLO con la información provista arriba. Si algo no está aquí, usa la herramienta escalar_a_humano en vez de adivinar.
-            - Nunca inventes precios ni disponibilidad — para disponibilidad usa siempre consultar_disponibilidad.
+            {$capabilityRules}
             - Respuestas cortas, estilo WhatsApp: 1 a 3 oraciones, sin markdown (sin negritas, sin listas, sin encabezados).
             - Siempre en español.
             - Si el cliente pide hablar con una persona, o detectas molestia o urgencia, usa escalar_a_humano de inmediato.
             PROMPT;
+    }
+
+    /**
+     * Reglas del prompt que dependen de las capacidades activas del negocio.
+     */
+    protected function capabilityRules(Business $business): string
+    {
+        $rules = [];
+
+        if ($business->hasCapability('agendar')) {
+            $rules[] = '- Nunca inventes precios ni disponibilidad — para disponibilidad usa siempre consultar_disponibilidad y agenda con agendar_cita.';
+        } else {
+            $rules[] = '- Nunca inventes precios. Este negocio no agenda citas por este canal: no ofrezcas agendar.';
+        }
+
+        if ($business->hasCapability('pedidos')) {
+            $rules[] = '- Puedes tomar pedidos con tomar_pedido: confirma primero los ítems, cantidades y la forma de entrega (domicilio o recoger) antes de registrarlo, y pide el nombre del cliente.';
+        }
+
+        if ($business->hasCapability('cotizar')) {
+            $rules[] = '- Cuando el cliente necesite una cotización o algo que requiera respuesta del negocio, captura los detalles con registrar_solicitud y dile que lo contactarán pronto.';
+        }
+
+        return implode("\n", $rules);
     }
 
     protected function buildMessageHistory(Conversation $conversation): array
@@ -293,10 +328,17 @@ class ReceptionistAgent
         return $mapped;
     }
 
-    protected function toolDefinitions(): array
+    /**
+     * Herramientas disponibles según las capacidades activas del negocio:
+     * agendar → disponibilidad + citas; pedidos → tomar_pedido; cotizar →
+     * registrar_solicitud. Escalar a humano está siempre.
+     */
+    protected function toolDefinitions(Business $business): array
     {
-        return [
-            [
+        $tools = [];
+
+        if ($business->hasCapability('agendar')) {
+            $tools[] = [
                 'name' => 'consultar_disponibilidad',
                 'description' => 'Consulta los horarios disponibles de un servicio en una fecha específica, calculados a partir de los horarios del negocio y las citas ya agendadas.',
                 'input_schema' => [
@@ -307,8 +349,8 @@ class ReceptionistAgent
                     ],
                     'required' => ['servicio_id', 'fecha'],
                 ],
-            ],
-            [
+            ];
+            $tools[] = [
                 'name' => 'agendar_cita',
                 'description' => 'Agenda una cita confirmada para el cliente en un horario disponible (verifícalo antes con consultar_disponibilidad).',
                 'input_schema' => [
@@ -320,8 +362,56 @@ class ReceptionistAgent
                     ],
                     'required' => ['servicio_id', 'inicio', 'nombre_cliente'],
                 ],
-            ],
-            [
+            ];
+        }
+
+        if ($business->hasCapability('pedidos')) {
+            $tools[] = [
+                'name' => 'tomar_pedido',
+                'description' => 'Registra un pedido del cliente con los productos o servicios que quiere. Confirma antes los ítems, cantidades y la forma de entrega.',
+                'input_schema' => [
+                    'type' => 'object',
+                    'properties' => [
+                        'items' => [
+                            'type' => 'array',
+                            'description' => 'Ítems del pedido',
+                            'items' => [
+                                'type' => 'object',
+                                'properties' => [
+                                    'nombre' => ['type' => 'string', 'description' => 'Nombre del producto o servicio'],
+                                    'cantidad' => ['type' => 'integer', 'description' => 'Cantidad (mínimo 1)'],
+                                    'nota' => ['type' => 'string', 'description' => 'Variación o aclaración del ítem (opcional)'],
+                                ],
+                                'required' => ['nombre', 'cantidad'],
+                            ],
+                        ],
+                        'nombre_cliente' => ['type' => 'string', 'description' => 'Nombre del cliente'],
+                        'entrega' => ['type' => 'string', 'enum' => ['domicilio', 'recoger'], 'description' => 'Forma de entrega'],
+                        'direccion' => ['type' => 'string', 'description' => 'Dirección de entrega si es a domicilio'],
+                        'nota' => ['type' => 'string', 'description' => 'Nota general del pedido (opcional)'],
+                    ],
+                    'required' => ['items', 'nombre_cliente', 'entrega'],
+                ],
+            ];
+        }
+
+        if ($business->hasCapability('cotizar')) {
+            $tools[] = [
+                'name' => 'registrar_solicitud',
+                'description' => 'Registra una solicitud de cotización o información que requiere respuesta del negocio: qué necesita el cliente, con los detalles que haya dado. El negocio lo contactará con la cotización.',
+                'input_schema' => [
+                    'type' => 'object',
+                    'properties' => [
+                        'resumen' => ['type' => 'string', 'description' => 'Resumen corto de lo que el cliente necesita'],
+                        'detalles' => ['type' => 'string', 'description' => 'Detalles adicionales: cantidades, fechas, presupuesto, referencias (opcional)'],
+                        'nombre_cliente' => ['type' => 'string', 'description' => 'Nombre del cliente'],
+                    ],
+                    'required' => ['resumen', 'nombre_cliente'],
+                ],
+            ];
+        }
+
+        $tools[] = [
                 'name' => 'escalar_a_humano',
                 'description' => 'Escala la conversación a un humano: úsala cuando no sepas la respuesta con la información disponible, el cliente pida hablar con una persona, detectes molestia o urgencia, o el mensaje contenga una palabra clave que lo amerite.',
                 'input_schema' => [
@@ -335,8 +425,9 @@ class ReceptionistAgent
                     ],
                     'required' => ['motivo'],
                 ],
-            ],
         ];
+
+        return $tools;
     }
 
     protected function executeTool(Business $business, ?Conversation $conversation, string $name, array $input, bool $dryRun = false): array
@@ -344,9 +435,47 @@ class ReceptionistAgent
         return match ($name) {
             'consultar_disponibilidad' => $this->consultarDisponibilidad($business, $input),
             'agendar_cita' => $this->agendarCita($business, $conversation, $input, $dryRun),
+            'tomar_pedido' => $this->registrarCustomerRequest($business, $conversation, 'pedido', $input, $dryRun),
+            'registrar_solicitud' => $this->registrarCustomerRequest($business, $conversation, 'cotizacion', $input, $dryRun),
             'escalar_a_humano' => $this->escalarAHumano($business, $conversation, $input, $dryRun),
             default => ['error' => "Herramienta desconocida: {$name}"],
         };
+    }
+
+    /**
+     * Registra un pedido o una solicitud de cotización como CustomerRequest
+     * y notifica al dueño. El nombre del cliente actualiza el contacto igual
+     * que al agendar una cita.
+     */
+    protected function registrarCustomerRequest(Business $business, ?Conversation $conversation, string $type, array $input, bool $dryRun): array
+    {
+        if ($dryRun || ! $conversation) {
+            return ['registrado' => true, 'simulado' => true, 'tipo' => $type];
+        }
+
+        $contact = $conversation->contact;
+
+        if (! empty($input['nombre_cliente']) && ! $contact->name) {
+            $contact->update(['name' => $input['nombre_cliente']]);
+        }
+
+        $payload = collect($input)->except('nombre_cliente')->all();
+
+        $request = \App\Models\CustomerRequest::create([
+            'business_id' => $business->id,
+            'contact_id' => $contact->id,
+            'conversation_id' => $conversation->id,
+            'type' => $type,
+            'payload' => $payload,
+        ]);
+
+        $business->owner?->notify(new \App\Notifications\CustomerRequestReceivedNotification($request));
+
+        return [
+            'registrado' => true,
+            'tipo' => $type,
+            'cliente' => $contact->fresh()->name ?? ($input['nombre_cliente'] ?? null),
+        ];
     }
 
     protected function consultarDisponibilidad(Business $business, array $input): array
@@ -355,6 +484,10 @@ class ReceptionistAgent
 
         if (! $service) {
             return ['error' => 'Servicio no encontrado.'];
+        }
+
+        if ($service->duration_minutes === null) {
+            return ['error' => 'Este servicio no se agenda por este canal; solo se informa. No ofrezcas horarios para él.'];
         }
 
         try {
@@ -417,6 +550,10 @@ class ReceptionistAgent
 
         if (! $service) {
             return ['error' => 'Servicio no encontrado.'];
+        }
+
+        if ($service->duration_minutes === null) {
+            return ['error' => 'Este servicio no se agenda por este canal; solo se informa. No lo agendes.'];
         }
 
         try {

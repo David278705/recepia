@@ -18,7 +18,7 @@ class SupportTicketController extends Controller
             ->withCount('replies')
             ->when($request->query('status'), fn ($q, $status) => $q->where('status', $status))
             ->when($request->query('type'), fn ($q, $type) => $q->where('type', $type))
-            ->orderByRaw("field(status, 'abierto', 'respondido', 'cerrado')")
+            ->orderByRaw("case status when 'abierto' then 0 when 'respondido' then 1 else 2 end")
             ->latest()
             ->get();
 

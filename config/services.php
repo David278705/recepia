@@ -50,6 +50,19 @@ return [
         'graph_version' => env('WHATSAPP_GRAPH_VERSION', 'v21.0'),
     ],
 
+    'meta' => [
+        // App de Meta para el Embedded Signup (Facebook Login for Business).
+        'app_id' => env('META_APP_ID'),
+        // Reutiliza el app secret del webhook si no se define uno propio.
+        'app_secret' => env('META_APP_SECRET', env('WHATSAPP_APP_SECRET')),
+        'graph_version' => env('META_GRAPH_VERSION', 'v23.0'),
+        // config_id de la configuración de Facebook Login for Business.
+        'es_config_id' => env('META_ES_CONFIG_ID'),
+        // System user token del portafolio propio — necesario SOLO para el
+        // alta por el link genérico alojado por Meta (PARTNER_ADDED).
+        'system_user_token' => env('META_SYSTEM_USER_TOKEN'),
+    ],
+
     'wompi' => [
         // Sandbox: https://sandbox.wompi.co/v1 — Producción: https://production.wompi.co/v1
         'base_url' => env('WOMPI_BASE_URL', 'https://sandbox.wompi.co/v1'),

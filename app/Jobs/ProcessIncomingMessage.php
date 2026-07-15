@@ -6,6 +6,7 @@ use App\Models\Contact;
 use App\Models\Conversation;
 use App\Models\Message;
 use App\Models\WhatsappAccount;
+use App\Notifications\ConversationEscalatedNotification;
 use App\Services\Claude\ReceptionistAgent;
 use App\Services\WhatsApp\WhatsAppService;
 use Illuminate\Bus\Queueable;
@@ -131,6 +132,12 @@ class ProcessIncomingMessage implements ShouldQueue
             return;
         }
 
+        if ($this->botMessageLimitReached($account, $conversation)) {
+            $this->escalateForMessageLimit($account, $conversation, $contact);
+
+            return;
+        }
+
         $this->invokeAgent($conversation);
     }
 
@@ -203,6 +210,60 @@ class ProcessIncomingMessage implements ShouldQueue
             ]);
         } catch (\Throwable $e) {
             Log::warning('RecepIA: no se pudo enviar la respuesta de tipo no soportado.', ['conversation_id' => $conversation->id, 'error' => $e->getMessage()]);
+        }
+    }
+
+    /**
+     * ¿El bot ya gastó su cupo de respuestas en esta conversación durante las
+     * últimas 24 h? El límite lo fija el admin por negocio (default 20).
+     */
+    protected function botMessageLimitReached(WhatsappAccount $account, Conversation $conversation): bool
+    {
+        $limit = (int) ($account->business?->daily_message_limit ?? 20);
+
+        if ($limit <= 0) {
+            return false; // 0 = sin límite
+        }
+
+        return $conversation->messages()
+            ->where('origin', 'bot')
+            ->where('created_at', '>=', now()->subDay())
+            ->count() >= $limit;
+    }
+
+    /**
+     * Cupo agotado: la conversación pasa al dueño (misma mecánica que
+     * cualquier escalación — el bot queda silenciado hasta que la retome) y
+     * se le avisa al cliente que una persona lo atenderá.
+     */
+    protected function escalateForMessageLimit(WhatsappAccount $account, Conversation $conversation, Contact $contact): void
+    {
+        $business = $account->business;
+
+        $conversation->update(['status' => 'escalada']);
+        $conversation->escalations()->create([
+            'business_id' => $business->id,
+            'reason' => 'limite_mensajes',
+        ]);
+
+        $business->owner?->notify(new ConversationEscalatedNotification($conversation->fresh(), 'limite_mensajes'));
+
+        try {
+            $ownerName = $business->owner?->name ?? 'el equipo';
+            $reply = "Ya le aviso a {$ownerName} para que continúe contigo personalmente, te contacta pronto 👍";
+            $response = (new WhatsAppService($account))->sendText($contact->wa_id, $reply);
+
+            $conversation->messages()->create([
+                'business_id' => $business->id,
+                'direction' => 'out',
+                'origin' => 'bot',
+                'type' => 'text',
+                'content' => $reply,
+                'wamid' => $response->json('messages.0.id'),
+                'delivery_status' => 'sent',
+            ]);
+        } catch (\Throwable $e) {
+            Log::warning('RecepIA: no se pudo avisar al cliente del límite de mensajes.', ['conversation_id' => $conversation->id, 'error' => $e->getMessage()]);
         }
     }
 

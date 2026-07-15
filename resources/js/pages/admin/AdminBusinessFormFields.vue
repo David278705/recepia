@@ -22,12 +22,15 @@ const availableOwners = ref([]);
 
 const emptyForm = () => ({
     name: '',
-    type: 'otro',
+    type: '',
+    description: '',
     address: '',
     phone: '',
     timezone: 'America/Bogota',
     status: 'piloto',
     monthly_price: '',
+    daily_message_limit: 20,
+    capabilities: ['agendar'],
     tone: 'cercano',
     agent_model: '',
     extra_instructions: '',
@@ -39,6 +42,31 @@ const emptyForm = () => ({
 });
 
 const currentConnectionStatus = ref(null);
+
+// Embedded Signup: link firmado para que el dueño conecte su número.
+const generatingLink = ref(false);
+const connectLink = ref('');
+const linkCopied = ref(false);
+
+async function generateConnectLink() {
+    generatingLink.value = true;
+    linkCopied.value = false;
+    try {
+        const { data } = await api.post(`/admin/businesses/${props.id}/connect-link`);
+        connectLink.value = data.data.url;
+    } finally {
+        generatingLink.value = false;
+    }
+}
+
+async function copyConnectLink() {
+    try {
+        await navigator.clipboard.writeText(connectLink.value);
+        linkCopied.value = true;
+    } catch {
+        // El input queda seleccionable como respaldo.
+    }
+}
 
 const form = ref(emptyForm());
 
@@ -66,12 +94,15 @@ async function load() {
         const b = data.data;
         form.value = {
             name: b.name,
-            type: b.type ?? 'otro',
+            type: b.type ?? '',
+            description: b.description ?? '',
             address: b.address ?? '',
             phone: b.phone ?? '',
             timezone: b.timezone ?? '',
             status: b.status ?? 'piloto',
             monthly_price: b.monthly_price ?? '',
+            daily_message_limit: b.daily_message_limit ?? 20,
+            capabilities: b.capabilities ?? ['agendar'],
             tone: b.tone ?? 'cercano',
             agent_model: b.agent_model ?? '',
             extra_instructions: b.extra_instructions ?? '',
@@ -98,6 +129,7 @@ async function handleSubmit() {
     const payload = { ...form.value };
 
     payload.monthly_price = payload.monthly_price === '' ? null : Number(payload.monthly_price);
+    payload.daily_message_limit = payload.daily_message_limit === '' ? 20 : Number(payload.daily_message_limit);
 
     // No pisar el token guardado si el admin no escribió uno nuevo.
     if (!payload.whatsapp_access_token) {
@@ -216,12 +248,33 @@ async function handleDelete() {
                 </div>
                 <div>
                     <label class="mb-1 block text-sm font-medium text-sand-700">Tipo de negocio</label>
-                    <select v-model="form.type" class="w-full rounded-lg border border-sand-200 px-3 py-2 text-sm focus:border-brand-500 focus:outline-none">
-                        <option value="barberia">Barbería</option>
-                        <option value="clinica">Clínica estética</option>
-                        <option value="restaurante">Restaurante</option>
-                        <option value="otro">Otro</option>
-                    </select>
+                    <input
+                        v-model="form.type" type="text" list="business-types" maxlength="100" required placeholder="barbería, veterinaria, taller…"
+                        class="w-full rounded-lg border border-sand-200 px-3 py-2 text-sm focus:border-brand-500 focus:outline-none"
+                    >
+                    <datalist id="business-types">
+                        <option value="barbería" />
+                        <option value="peluquería / salón de belleza" />
+                        <option value="clínica estética" />
+                        <option value="consultorio médico" />
+                        <option value="odontología" />
+                        <option value="veterinaria" />
+                        <option value="restaurante" />
+                        <option value="taller mecánico" />
+                        <option value="spa" />
+                        <option value="estudio de tatuajes" />
+                    </datalist>
+                    <p v-if="errors.type" class="mt-1 text-xs text-amber-700">{{ errors.type[0] }}</p>
+                </div>
+                <div class="sm:col-span-2">
+                    <label class="mb-1 block text-sm font-medium text-sand-700">Descripción del negocio</label>
+                    <textarea
+                        v-model="form.description" rows="2" maxlength="2000"
+                        placeholder="Qué hace el negocio, qué lo distingue, qué debe saber el bot para presentarlo bien…"
+                        class="w-full rounded-lg border border-sand-200 px-3 py-2 text-sm focus:border-brand-500 focus:outline-none"
+                    />
+                    <p class="mt-1 text-xs text-sand-400">El bot usa esta descripción como contexto al responder.</p>
+                    <p v-if="errors.description" class="mt-1 text-xs text-amber-700">{{ errors.description[0] }}</p>
                 </div>
                 <div>
                     <label class="mb-1 block text-sm font-medium text-sand-700">Zona horaria</label>
@@ -253,6 +306,31 @@ async function handleDelete() {
                     <p v-if="errors.monthly_price" class="mt-1 text-xs text-amber-700">{{ errors.monthly_price[0] }}</p>
                 </div>
                 <div>
+                    <label class="mb-1 block text-sm font-medium text-sand-700">Límite de mensajes del bot / 24 h</label>
+                    <input
+                        v-model="form.daily_message_limit" type="number" min="0" max="10000" step="1"
+                        class="w-full rounded-lg border border-sand-200 px-3 py-2 text-sm focus:border-brand-500 focus:outline-none"
+                    >
+                    <p class="mt-1 text-xs text-sand-400">Respuestas del bot por conversación en 24 h; al agotarse, la conversación se escala al dueño. 0 = sin límite.</p>
+                    <p v-if="errors.daily_message_limit" class="mt-1 text-xs text-amber-700">{{ errors.daily_message_limit[0] }}</p>
+                </div>
+                <div class="sm:col-span-2">
+                    <label class="mb-1 block text-sm font-medium text-sand-700">Capacidades del recepcionista</label>
+                    <div class="flex flex-wrap gap-4">
+                        <label class="flex items-center gap-2 text-sm text-sand-700">
+                            <input v-model="form.capabilities" type="checkbox" value="agendar"> Agendar citas
+                        </label>
+                        <label class="flex items-center gap-2 text-sm text-sand-700">
+                            <input v-model="form.capabilities" type="checkbox" value="pedidos"> Tomar pedidos
+                        </label>
+                        <label class="flex items-center gap-2 text-sm text-sand-700">
+                            <input v-model="form.capabilities" type="checkbox" value="cotizar"> Registrar cotizaciones
+                        </label>
+                    </div>
+                    <p class="mt-1 text-xs text-sand-400">Define qué herramientas usa el bot. Sin ninguna marcada solo responde preguntas y escala.</p>
+                    <p v-if="errors.capabilities" class="mt-1 text-xs text-amber-700">{{ errors.capabilities[0] }}</p>
+                </div>
+                <div>
                     <label class="mb-1 block text-sm font-medium text-sand-700">Tono del bot</label>
                     <select v-model="form.tone" class="w-full rounded-lg border border-sand-200 px-3 py-2 text-sm focus:border-brand-500 focus:outline-none">
                         <option value="cercano">Cercano</option>
@@ -273,11 +351,39 @@ async function handleDelete() {
             </div>
         </Card>
 
-        <Card>
-            <h3 class="mb-1 font-display text-sm font-semibold text-brand-900">Conexión de WhatsApp</h3>
+        <Card v-if="isEdit">
+            <h3 class="mb-1 font-display text-sm font-semibold text-brand-900">Conectar WhatsApp (Embedded Signup)</h3>
             <p class="mb-3 text-xs text-sand-500">
-                Datos de la WhatsApp Business Cloud API del negocio (modo Coexistence). Se registran manualmente aquí
-                hasta que exista Embedded Signup automatizado.
+                Vía principal: el flujo oficial de Meta con coexistencia — un popup donde el dueño autoriza con su
+                Facebook y escanea un QR con su app.
+                <span v-if="currentConnectionStatus" class="font-medium text-brand-700">Estado actual: {{ currentConnectionStatus }}</span>
+            </p>
+            <div class="flex flex-wrap items-center gap-3">
+                <router-link
+                    :to="{ name: 'connect-whatsapp', query: { business: props.id } }"
+                    class="rounded-lg bg-brand-800 px-4 py-2 text-sm font-semibold text-white transition hover:bg-brand-900"
+                >
+                    Conectar aquí mismo
+                </router-link>
+                <Button type="button" variant="ghost" :disabled="generatingLink" @click="generateConnectLink">
+                    {{ generatingLink ? 'Generando…' : 'Generar link para el dueño (48 h)' }}
+                </Button>
+            </div>
+            <div v-if="connectLink" class="mt-3 flex items-center gap-2">
+                <input
+                    :value="connectLink" readonly
+                    class="w-full rounded-lg border border-sand-200 bg-sand-50 px-3 py-2 font-mono text-xs text-sand-600"
+                    @focus="$event.target.select()"
+                >
+                <Button type="button" variant="ghost" @click="copyConnectLink">{{ linkCopied ? 'Copiado ✓' : 'Copiar' }}</Button>
+            </div>
+        </Card>
+
+        <Card>
+            <h3 class="mb-1 font-display text-sm font-semibold text-brand-900">Alta manual / avanzada</h3>
+            <p class="mb-3 text-xs text-sand-500">
+                Vía alternativa: registra a mano los datos de la WhatsApp Business Cloud API. Úsala solo si el
+                Embedded Signup no aplica para este negocio.
                 <span v-if="currentConnectionStatus" class="font-medium text-brand-700">Estado actual: {{ currentConnectionStatus }}</span>
             </p>
             <div class="grid gap-4 sm:grid-cols-2">

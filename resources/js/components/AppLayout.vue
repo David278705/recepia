@@ -1,11 +1,12 @@
 <script setup>
-import { HomeIcon, ChatBubbleLeftRightIcon, CalendarDaysIcon, Cog6ToothIcon, CreditCardIcon, LifebuoyIcon } from '@heroicons/vue/24/outline';
+import { HomeIcon, ChatBubbleLeftRightIcon, CalendarDaysIcon, Cog6ToothIcon, CreditCardIcon, LifebuoyIcon, InboxArrowDownIcon } from '@heroicons/vue/24/outline';
 import SidebarLayout from './SidebarLayout.vue';
 
 const navItems = [
     { name: 'dashboard', label: 'Panel principal', icon: HomeIcon },
     { name: 'conversations', label: 'Conversaciones', icon: ChatBubbleLeftRightIcon },
     { name: 'appointments', label: 'Citas', icon: CalendarDaysIcon },
+    { name: 'requests', label: 'Solicitudes', icon: InboxArrowDownIcon },
     { name: 'settings', label: 'Configuración', icon: Cog6ToothIcon },
     { name: 'subscription', label: 'Suscripción', icon: CreditCardIcon },
     { name: 'support', label: 'Soporte', icon: LifebuoyIcon },

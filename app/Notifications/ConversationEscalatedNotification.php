@@ -17,6 +17,7 @@ class ConversationEscalatedNotification extends Notification implements ShouldQu
         'cliente_lo_pidio' => 'el cliente pidió hablar con una persona',
         'molestia' => 'se detectó molestia o urgencia',
         'keyword' => 'una palabra clave disparó la escalación',
+        'limite_mensajes' => 'el bot alcanzó su límite de mensajes de 24 horas en esta conversación',
     ];
 
     public function __construct(protected Conversation $conversation, protected string $reason) {}

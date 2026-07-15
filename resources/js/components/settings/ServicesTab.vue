@@ -12,7 +12,7 @@ const saving = ref(false);
 const errors = ref({});
 const editingId = ref(null);
 
-const emptyForm = () => ({ name: '', description: '', duration_minutes: 30, price: '', active: true });
+const emptyForm = () => ({ name: '', description: '', duration_minutes: 30, price: '', price_note: '', active: true });
 const form = ref(emptyForm());
 
 async function load() {
@@ -27,8 +27,9 @@ function edit(service) {
     form.value = {
         name: service.name,
         description: service.description ?? '',
-        duration_minutes: service.duration_minutes,
+        duration_minutes: service.duration_minutes ?? '',
         price: service.price ?? '',
+        price_note: service.price_note ?? '',
         active: service.active,
     };
 }
@@ -42,7 +43,12 @@ function resetForm() {
 async function handleSubmit() {
     saving.value = true;
     errors.value = {};
-    const payload = { ...form.value, price: form.value.price === '' ? null : form.value.price };
+    const payload = {
+        ...form.value,
+        price: form.value.price === '' ? null : form.value.price,
+        duration_minutes: form.value.duration_minutes === '' || form.value.duration_minutes === null ? null : form.value.duration_minutes,
+        price_note: form.value.price_note === '' ? null : form.value.price_note,
+    };
 
     try {
         if (editingId.value) {
@@ -80,8 +86,8 @@ onMounted(load);
                     <div>
                         <p class="font-medium text-sand-800">{{ service.name }}</p>
                         <p class="text-xs text-sand-500">
-                            {{ service.duration_minutes }} min ·
-                            {{ service.price ? `$${Number(service.price).toLocaleString('es-CO')}` : 'Precio a confirmar' }}
+                            {{ service.duration_minutes ? `${service.duration_minutes} min` : 'Solo informativo' }} ·
+                            {{ service.price ? `$${Number(service.price).toLocaleString('es-CO')}` : (service.price_note || 'Precio a confirmar') }}<template v-if="service.price && service.price_note"> ({{ service.price_note }})</template>
                         </p>
                     </div>
                     <div class="flex items-center gap-2">
@@ -102,12 +108,18 @@ onMounted(load);
                 </div>
                 <textarea v-model="form.description" placeholder="Descripción (opcional)" rows="2" class="w-full rounded-lg border border-sand-200 px-3 py-2 text-sm focus:border-brand-500 focus:outline-none" />
                 <div>
-                    <label class="mb-1 block text-xs text-sand-500">Duración (min)</label>
-                    <input v-model.number="form.duration_minutes" type="number" min="5" required class="w-full rounded-lg border border-sand-200 px-3 py-2 text-sm focus:border-brand-500 focus:outline-none">
+                    <label class="mb-1 block text-xs text-sand-500">Duración (min) — vacío = solo informativo, no se agenda</label>
+                    <input v-model.number="form.duration_minutes" type="number" min="5" class="w-full rounded-lg border border-sand-200 px-3 py-2 text-sm focus:border-brand-500 focus:outline-none">
+                    <p v-if="errors.duration_minutes" class="mt-1 text-xs text-amber-700">{{ errors.duration_minutes[0] }}</p>
                 </div>
                 <div>
                     <label class="mb-1 block text-xs text-sand-500">Precio (vacío = "el precio te lo confirma el equipo")</label>
                     <input v-model="form.price" type="number" min="0" step="1000" class="w-full rounded-lg border border-sand-200 px-3 py-2 text-sm focus:border-brand-500 focus:outline-none">
+                </div>
+                <div>
+                    <label class="mb-1 block text-xs text-sand-500">Nota de precio (opcional: "desde", "según tamaño"…)</label>
+                    <input v-model="form.price_note" type="text" maxlength="100" class="w-full rounded-lg border border-sand-200 px-3 py-2 text-sm focus:border-brand-500 focus:outline-none">
+                    <p v-if="errors.price_note" class="mt-1 text-xs text-amber-700">{{ errors.price_note[0] }}</p>
                 </div>
                 <label class="flex items-center gap-2 text-sm text-sand-700">
                     <input v-model="form.active" type="checkbox" class="rounded border-sand-300 text-brand-700 focus:ring-brand-500">

@@ -112,3 +112,75 @@ Crea migraciones y modelos (con factories y seeders de demo) para:
 5. Textos de UI en español; código, nombres de clases y columnas en inglés.
 6. Si algo del plan choca con la realidad del codebase, propón la alternativa antes de improvisar.
 7. Fuera de alcance del MVP (no lo construyas aunque sea tentador): pagos/suscripciones, Embedded Signup automatizado, recordatorios de cita por template, soporte de audio con transcripción, multi-idioma, app móvil.
+
+# FASE 7 — EMBEDDED SIGNUP PROPIO CON COEXISTENCIA (WhatsApp Cloud API)
+
+> Cómo usarlo: agrega este archivo al repo (o pégalo al final de PLAN.md) y dile a Claude Code: "Lee FASE-7.md y ejecútala. Las fases 0-6 ya están completas."
+
+---
+
+## CONTEXTO
+
+Las fases 0-6 del PLAN.md están completas: el sistema ya procesa mensajes por webhook, el agente responde y agenda, y el panel funciona. Hoy el alta de un negocio es manual (el super_admin pega phone_number_id, waba_id y token en un formulario). Esta fase reemplaza ese proceso por el flujo oficial **Embedded Signup de Meta con soporte de Coexistencia**, para que conectar el WhatsApp de un cliente sea un botón en nuestro panel.
+
+**Qué es el flujo:** un popup oficial de Meta (SDK de JavaScript de Facebook) donde el dueño del negocio inicia sesión con su Facebook, crea/selecciona su Meta Business Manager, elige conectar su número existente de la app WhatsApp Business (eso activa la coexistencia), verifica el número y escanea un QR con su app. Al terminar, el popup nos entrega los identificadores y un código que canjeamos por un token para operar su WABA desde nuestra app.
+
+**Importante — no elimines el alta manual existente.** Déjala como vía alternativa (etiquétala "Alta manual / avanzada" en el panel). El Embedded Signup pasa a ser la vía principal.
+
+## PREREQUISITOS EXTERNOS (los hago yo, tú solo déjalos configurables)
+
+Estos trámites son míos y pueden no estar listos cuando programes; el código debe quedar terminado y probable con mi cuenta de admin/testers aunque el acceso avanzado aún no esté aprobado:
+
+- Verificación de negocio de mi Meta Business Manager (en curso).
+- Acceso avanzado a `whatsapp_business_management` y `whatsapp_business_messaging` (en curso).
+- Una configuración de **Facebook Login for Business** creada en mi app de Meta, que me da un `config_id`.
+
+Variables de entorno nuevas (agrégalas a `.env.example` documentadas):
+
+```
+META_APP_ID=
+META_APP_SECRET=        # ya debería existir de la validación de webhooks
+META_GRAPH_VERSION=v23.0   # configurable
+META_ES_CONFIG_ID=      # config_id del Embedded Signup (Facebook Login for Business)
+```
+
+## 1. FRONTEND — Página de conexión
+
+1. Nueva pantalla "Conectar WhatsApp" accesible desde: (a) el detalle de un business en el panel de super_admin, y (b) una URL firmada temporal (signed URL de Laravel, expira en 48h) que el super_admin puede generarle a un dueño para que lo haga desde su propio computador con su propia sesión de Facebook. La pantalla NO requiere que el dueño tenga usuario en nuestra plataforma si entra por link firmado; el link ya viene atado a su business_id.
+2. La pantalla carga el SDK de JavaScript de Facebook y lanza el flujo con `FB.login`, pasando:
+    - `config_id` = META_ES_CONFIG_ID
+    - `response_type: 'code'`, `override_default_response_type: true`
+    - `extras: { "setup": {}, "featureType": "whatsapp_business_app_onboarding", "sessionInfoVersion": "3" }` — `featureType: whatsapp_business_app_onboarding` es lo que habilita la variante de coexistencia para números que ya viven en la app de WhatsApp Business. Verifica el nombre exacto del parámetro contra la documentación oficial vigente de "Embedded Signup — Onboarding business app users (Coexistence)" en developers.facebook.com antes de fijarlo; si difiere, usa el oficial.
+3. Escucha los eventos `message` del popup (session info): captura `phone_number_id` y `waba_id` cuando el evento sea `WA_EMBEDDED_SIGNUP` con estado FINISH, y maneja explícitamente los estados de cancelación/abandono y error mostrando mensajes útiles.
+4. Al terminar el popup, envía al backend: el `code` de la respuesta de FB.login + `phone_number_id` + `waba_id` + business_id (del contexto o del link firmado). Muestra una UI de progreso por pasos ("Canjeando autorización… Suscribiendo webhooks… Verificando número…") y un estado final de éxito o error.
+5. Pantalla de error amigable con las causas comunes de inelegibilidad y qué hacer: app WhatsApp Business desactualizada (requiere v2.24.17+), número con menos de ~7 días de actividad real en la app, número que estuvo antes en otra WABA (enfriamiento de 1-2 meses), o cuenta/país no habilitado. Texto en español, tono simple para no técnicos.
+
+## 2. BACKEND — Canje y aprovisionamiento
+
+Endpoint autenticado/firmado `POST /whatsapp/onboarding/complete` que ejecuta, en un flujo idempotente y con manejo de errores por paso:
+
+1. **Canje del code por token:** `GET /oauth/access_token` con app_id, app_secret y el code recibido. El token resultante es el business token del cliente para su WABA: guárdalo encriptado (Crypt) en `whatsapp_accounts`, nunca en logs.
+2. **Suscripción de webhooks:** `POST /{waba_id}/subscribed_apps` con ese token. Sin este paso el número queda "sordo" — verifica la respuesta y falla con mensaje claro si no queda suscrita.
+3. **Registro del número:** `POST /{phone_number_id}/register` con un PIN de verificación en dos pasos (genera uno por negocio y guárdalo encriptado). Consulta la documentación oficial de coexistencia sobre este paso: para números en modo coexistence el registro puede comportarse distinto que en la ruta clásica; implementa el manejo de ambos casos y no asumas.
+4. **Verificación post-alta:** consulta el número (`GET /{phone_number_id}?fields=verified_name,display_phone_number,quality_rating,platform_type`) y guarda nombre visible, número E.164, y detecta/persiste el modo (coexistence vs dedicado) según lo que devuelva la API.
+5. Actualiza `whatsapp_accounts` del business: estado `conectado`, modo, fecha de conexión. Si el business ya tenía credenciales manuales, pide confirmación antes de sobreescribir (flag en el request).
+6. Registra todo el flujo en un log de onboarding (tabla o canal de log dedicado) para depurar altas fallidas: paso alcanzado, error de Meta (código y mensaje), sin tokens en claro.
+
+## 3. POST-ONBOARDING Y MONITOREO
+
+1. Al completar un alta: notificación al super_admin (email) con el resumen del negocio conectado.
+2. Comando programado (diario) `recepia:verificar-conexiones`: para cada whatsapp_account conectado, consulta el estado del número contra la Graph API y marca/alerta si la conexión se degradó — el caso típico es que el dueño no abrió su app WhatsApp Business en ~13-14 días y la coexistencia se cayó. La alerta al super_admin debe decir exactamente eso y el remedio ("pídele al dueño abrir la app").
+3. En el dashboard de super_admin, badge de salud de conexión por negocio (verde/amarillo/rojo) con fecha de última verificación y último mensaje recibido.
+
+## 4. TESTS Y DOCUMENTACIÓN
+
+1. Tests del endpoint de onboarding con la Graph API mockeada (Http::fake): flujo feliz, code inválido, fallo en subscribed_apps, fallo en register, reintento idempotente, y sobreescritura con/sin confirmación.
+2. Test del link firmado: expira, atado al business correcto, inaccesible sin firma.
+3. Actualiza el README con: los tres trámites externos y dónde se hacen (verificación de negocio, acceso avanzado con screencast, creación del config_id en Facebook Login for Business), el checklist de elegibilidad del número del cliente (versión de app, 7+ días de actividad, sin WABA previa, nombre del negocio correcto ANTES de conectar porque queda bloqueado), y el guion de la sesión de onboarding asistido de principio a fin.
+
+## REGLAS
+
+1. Respeta convenciones y estructura ya establecidas en el repo; UI en español, código en inglés.
+2. Todo secreto en env; tokens y PIN encriptados en base de datos; jamás en logs.
+3. Ante cualquier discrepancia entre este documento y la documentación oficial vigente de Meta (nombres de parámetros, versión del Graph API, pasos de coexistencia), gana la documentación oficial: señálamelo y ajusta.
+4. Al terminar, resume qué construiste, qué quedó pendiente de mis trámites externos, y dame la lista exacta de pasos que yo debo hacer en los paneles de Meta para activar todo.
