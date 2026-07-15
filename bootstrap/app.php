@@ -19,6 +19,10 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        // Detrás del proxy de Railway (TLS terminado antes de llegar a la
+        // app): confiar en X-Forwarded-* para que las URLs salgan en https.
+        $middleware->trustProxies(at: '*');
+
         $middleware->statefulApi();
         $middleware->alias([
             'admin' => EnsureUserIsSuperAdmin::class,
