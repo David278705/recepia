@@ -53,7 +53,7 @@ class ClaudeClient
 
         $payload = [
             'model' => $this->model,
-            'max_tokens' => $maxTokens ?? config('recepia.agent.max_tokens', 1024),
+            'max_tokens' => $maxTokens ?? config('pilo.agent.max_tokens', 1024),
             'messages' => $messages,
         ];
 
@@ -70,7 +70,7 @@ class ClaudeClient
             'anthropic-version' => $this->apiVersion,
             'content-type' => 'application/json',
         ])
-            ->timeout(config('recepia.agent.timeout', 20))
+            ->timeout(config('pilo.agent.timeout', 20))
             ->post($this->endpoint, $payload);
 
         $response->throw();

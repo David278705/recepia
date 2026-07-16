@@ -15,7 +15,7 @@ return new class extends Migration
             $table->string('verified_name')->nullable()->after('phone_e164');
             $table->string('quality_rating', 32)->nullable()->after('verified_name');
             $table->timestamp('connected_at')->nullable()->after('connection_status');
-            // Última verificación de salud (recepia:verificar-conexiones).
+            // Última verificación de salud (pilo:verificar-conexiones).
             $table->timestamp('last_checked_at')->nullable()->after('connected_at');
         });
 

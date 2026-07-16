@@ -21,6 +21,7 @@ class BusinessResource extends JsonResource
             'timezone' => $this->timezone,
             'status' => $this->status,
             'tone' => $this->tone,
+            'show_brand' => (bool) $this->show_brand,
             'extra_instructions' => $this->extra_instructions,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,

@@ -69,7 +69,7 @@ class SubscriptionController extends Controller
         }
 
         if (! $wompi->hasIntegritySecret()) {
-            Log::error('RecepIA: WOMPI_INTEGRITY_SECRET no está configurado; Wompi rechazará el cobro (firma de integridad requerida).');
+            Log::error('Pilo: WOMPI_INTEGRITY_SECRET no está configurado; Wompi rechazará el cobro (firma de integridad requerida).');
 
             return response()->json([
                 'message' => 'Los pagos no están disponibles en este momento. Por favor contáctanos (falta configurar la llave de integridad de Wompi).',
@@ -87,7 +87,7 @@ class SubscriptionController extends Controller
 
             $subscription = $biller->subscribe($business, $cardToken);
         } catch (Throwable $e) {
-            Log::error('RecepIA: fallo al crear la suscripción en Wompi.', [
+            Log::error('Pilo: fallo al crear la suscripción en Wompi.', [
                 'business_id' => $business->id,
                 'error' => $e->getMessage(),
             ]);
@@ -117,7 +117,7 @@ class SubscriptionController extends Controller
         try {
             return response()->json(['data' => $wompi->financialInstitutions()]);
         } catch (Throwable $e) {
-            Log::error('RecepIA: no se pudo obtener la lista de bancos PSE de Wompi.', ['error' => $e->getMessage()]);
+            Log::error('Pilo: no se pudo obtener la lista de bancos PSE de Wompi.', ['error' => $e->getMessage()]);
 
             return response()->json(['message' => 'No pudimos cargar la lista de bancos. Inténtalo de nuevo.'], 422);
         }
@@ -151,7 +151,7 @@ class SubscriptionController extends Controller
         }
 
         if (! $wompi->hasIntegritySecret()) {
-            Log::error('RecepIA: WOMPI_INTEGRITY_SECRET no está configurado; Wompi rechazará la transacción.');
+            Log::error('Pilo: WOMPI_INTEGRITY_SECRET no está configurado; Wompi rechazará la transacción.');
 
             return response()->json([
                 'message' => 'Los pagos no están disponibles en este momento. Por favor contáctanos (falta configurar la llave de integridad de Wompi).',
@@ -185,7 +185,7 @@ class SubscriptionController extends Controller
         try {
             $result = $biller->startDirectPayment($business, $data['method'], $data, url('/subscription'));
         } catch (Throwable $e) {
-            Log::error('RecepIA: fallo al iniciar el pago directo en Wompi.', [
+            Log::error('Pilo: fallo al iniciar el pago directo en Wompi.', [
                 'business_id' => $business->id,
                 'method' => $data['method'],
                 'error' => $e->getMessage(),
@@ -251,7 +251,7 @@ class SubscriptionController extends Controller
         try {
             $biller->confirmTransaction($business, $data['transaction_id']);
         } catch (Throwable $e) {
-            Log::error('RecepIA: fallo al confirmar la transacción del widget de Wompi.', [
+            Log::error('Pilo: fallo al confirmar la transacción del widget de Wompi.', [
                 'business_id' => $business->id,
                 'transaction_id' => $data['transaction_id'],
                 'error' => $e->getMessage(),

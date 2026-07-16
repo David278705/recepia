@@ -36,7 +36,7 @@ class SubscriptionEmailsTest extends TestCase
             'services.wompi.private_key' => 'prv_test_123',
             'services.wompi.events_secret' => 'test_events_secret',
             'services.wompi.integrity_secret' => 'test_integrity_secret',
-            'recepia.billing.grace_days' => 5,
+            'pilo.billing.grace_days' => 5,
         ]);
 
         $this->admin = User::factory()->create(['role' => 'super_admin']);
@@ -112,7 +112,7 @@ class SubscriptionEmailsTest extends TestCase
             'current_period_ends_at' => now()->subDays(6),
         ]);
 
-        $this->artisan('recepia:cobrar-suscripciones')->assertSuccessful();
+        $this->artisan('pilo:cobrar-suscripciones')->assertSuccessful();
 
         Notification::assertSentTo($business->owner, SubscriptionExpiredNotification::class);
         Notification::assertSentTo($this->admin, AdminSubscriptionAlert::class);
@@ -130,7 +130,7 @@ class SubscriptionEmailsTest extends TestCase
             'current_period_ends_at' => now()->subHour(),
         ]);
 
-        $this->artisan('recepia:cobrar-suscripciones')->assertSuccessful();
+        $this->artisan('pilo:cobrar-suscripciones')->assertSuccessful();
 
         Notification::assertSentTo($business->owner, SubscriptionEndedNotification::class);
         Notification::assertSentTo($this->admin, AdminSubscriptionAlert::class);
@@ -157,7 +157,7 @@ class SubscriptionEmailsTest extends TestCase
         ]);
 
         // Primera corrida: avisa. Segunda corrida (reintento horario): silencio.
-        $this->artisan('recepia:cobrar-suscripciones')->assertSuccessful();
+        $this->artisan('pilo:cobrar-suscripciones')->assertSuccessful();
 
         Http::fake([
             'sandbox.wompi.co/v1/transactions/*' => Http::response([
@@ -165,7 +165,7 @@ class SubscriptionEmailsTest extends TestCase
             ]),
             'sandbox.wompi.co/v1/transactions' => Http::response(['data' => ['id' => 'trx-fail-2', 'status' => 'PENDING']], 201),
         ]);
-        $this->artisan('recepia:cobrar-suscripciones')->assertSuccessful();
+        $this->artisan('pilo:cobrar-suscripciones')->assertSuccessful();
 
         Notification::assertSentToTimes($business->owner, PaymentFailedNotification::class, 1);
     }
@@ -197,7 +197,7 @@ class SubscriptionEmailsTest extends TestCase
             'current_period_ends_at' => now()->addDays(20),
         ]);
 
-        $this->artisan('recepia:recordatorios-suscripcion')->assertSuccessful();
+        $this->artisan('pilo:recordatorios-suscripcion')->assertSuccessful();
 
         Notification::assertSentTo($expiring->owner, RenewalReminderNotification::class);
         Notification::assertSentTo($inGrace->owner, RenewalReminderNotification::class);

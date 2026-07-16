@@ -28,7 +28,7 @@ class SimulateAgentCommandTest extends TestCase
 
         Http::fake(['api.anthropic.com/*' => Http::response($this->anthropicText('Hola, ¿en qué te ayudo?'))]);
 
-        $this->artisan('recepia:simular', ['mensaje' => 'Hola'])
+        $this->artisan('pilo:simular', ['mensaje' => 'Hola'])
             ->expectsOutputToContain('Hola, ¿en qué te ayudo?')
             ->assertSuccessful();
 
@@ -42,23 +42,23 @@ class SimulateAgentCommandTest extends TestCase
         $business = Business::factory()->create(['slug' => 'barberia-el-corte']);
 
         Http::fake(['api.anthropic.com/*' => Http::response($this->anthropicText('Respuesta 1'))]);
-        $this->artisan('recepia:simular', ['mensaje' => 'Primero'])->assertSuccessful();
+        $this->artisan('pilo:simular', ['mensaje' => 'Primero'])->assertSuccessful();
 
-        Storage::assertExists("recepia-simular/{$business->id}.json");
-        $sessionAfterFirst = json_decode(Storage::get("recepia-simular/{$business->id}.json"), true);
+        Storage::assertExists("pilo-simular/{$business->id}.json");
+        $sessionAfterFirst = json_decode(Storage::get("pilo-simular/{$business->id}.json"), true);
         $this->assertCount(2, $sessionAfterFirst);
 
         Http::fake(['api.anthropic.com/*' => Http::response($this->anthropicText('Respuesta 2'))]);
-        $this->artisan('recepia:simular', ['mensaje' => 'Otra vez', '--reset' => true])->assertSuccessful();
+        $this->artisan('pilo:simular', ['mensaje' => 'Otra vez', '--reset' => true])->assertSuccessful();
 
-        $sessionAfterReset = json_decode(Storage::get("recepia-simular/{$business->id}.json"), true);
+        $sessionAfterReset = json_decode(Storage::get("pilo-simular/{$business->id}.json"), true);
         $this->assertCount(2, $sessionAfterReset);
         $this->assertSame('Otra vez', $sessionAfterReset[0]['content']);
     }
 
     public function test_fails_gracefully_for_an_unknown_business(): void
     {
-        $this->artisan('recepia:simular', ['mensaje' => 'Hola', '--business' => 'no-existe'])
+        $this->artisan('pilo:simular', ['mensaje' => 'Hola', '--business' => 'no-existe'])
             ->assertFailed();
     }
 }

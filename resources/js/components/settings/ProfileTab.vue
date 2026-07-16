@@ -18,6 +18,7 @@ const form = reactive({
     phone: '',
     timezone: '',
     tone: 'cercano',
+    show_brand: false,
     extra_instructions: '',
 });
 
@@ -31,6 +32,7 @@ onMounted(async () => {
     form.phone = b.phone ?? '';
     form.timezone = b.timezone ?? '';
     form.tone = b.tone ?? 'cercano';
+    form.show_brand = Boolean(b.show_brand);
     form.extra_instructions = b.extra_instructions ?? '';
     loading.value = false;
 });
@@ -133,7 +135,7 @@ async function handleSubmit() {
                 </div>
 
                 <div>
-                    <label class="mb-1 block text-sm font-medium text-sand-700">Tono del bot</label>
+                    <label class="mb-1 block text-sm font-medium text-sand-700">Tono de Pilo</label>
                     <select
                         v-model="form.tone"
                         class="w-full rounded-lg border border-sand-200 px-3 py-2 text-sm focus:border-brand-500 focus:outline-none"
@@ -143,19 +145,27 @@ async function handleSubmit() {
                     </select>
                 </div>
 
+                <label class="flex items-start gap-2 text-sm text-sand-700">
+                    <input v-model="form.show_brand" type="checkbox" class="mt-0.5 rounded border-sand-300 text-brand-700 focus:ring-brand-500">
+                    <span>
+                        Presentar a Pilo con su nombre ante tus clientes
+                        <span class="block text-xs text-sand-400">Apagado: "Soy el asistente de {{ form.name || 'tu negocio' }}". Encendido: "Soy Pilo, el asistente de {{ form.name || 'tu negocio' }}".</span>
+                    </span>
+                </label>
+
                 <div>
-                    <label class="mb-1 block text-sm font-medium text-sand-700">Instrucciones extra para el bot</label>
+                    <label class="mb-1 block text-sm font-medium text-sand-700">Instrucciones extra para Pilo</label>
                     <textarea
                         v-model="form.extra_instructions"
                         rows="3"
-                        placeholder="Cosas que el bot debe saber o tener en cuenta al responder…"
+                        placeholder="Cosas que Pilo debe saber o tener en cuenta al responder…"
                         class="w-full rounded-lg border border-sand-200 px-3 py-2 text-sm focus:border-brand-500 focus:outline-none"
                     />
                 </div>
 
                 <div class="flex items-center gap-3">
                     <Button type="submit" :disabled="saving">{{ saving ? 'Guardando…' : 'Guardar cambios' }}</Button>
-                    <span v-if="saved" class="text-sm text-brand-700">Guardado.</span>
+                    <span v-if="saved" class="text-sm text-brand-700">Listo, Pilo ya atiende con los cambios.</span>
                 </div>
             </form>
         </Card>

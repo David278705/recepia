@@ -12,7 +12,7 @@ const tabs = [
     { key: 'services', label: 'Servicios', component: ServicesTab },
     { key: 'hours', label: 'Horarios', component: HoursTab },
     { key: 'faqs', label: 'Preguntas frecuentes', component: FaqsTab },
-    { key: 'bot-test', label: 'Probar mi bot', component: BotTestTab },
+    { key: 'bot-test', label: 'Probar a Pilo', component: BotTestTab },
     { key: 'account', label: 'Cuenta', component: AccountTab },
 ];
 

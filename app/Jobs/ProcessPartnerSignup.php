@@ -33,7 +33,7 @@ class ProcessPartnerSignup implements ShouldQueue
         try {
             $result = $signup->handlePartnerAdded($this->wabaId, $this->ownerBusinessId);
         } catch (\Throwable $e) {
-            Log::error('RecepIA: fallo procesando PARTNER_ADDED.', [
+            Log::error('Pilo: fallo procesando PARTNER_ADDED.', [
                 'waba_id' => $this->wabaId,
                 'error' => $e->getMessage(),
             ]);
@@ -42,7 +42,7 @@ class ProcessPartnerSignup implements ShouldQueue
         }
 
         if ($result === null) {
-            Log::warning('RecepIA: PARTNER_ADDED sin negocio que coincida por teléfono (alta huérfana).', ['waba_id' => $this->wabaId]);
+            Log::warning('Pilo: PARTNER_ADDED sin negocio que coincida por teléfono (alta huérfana).', ['waba_id' => $this->wabaId]);
             Notification::send(User::superAdmins(), new OrphanSignupNotification($this->wabaId, $this->ownerBusinessId));
 
             return;

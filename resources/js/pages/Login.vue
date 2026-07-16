@@ -36,7 +36,7 @@ async function handleSubmit() {
         <div class="flex flex-col px-6 py-8 sm:px-12">
             <router-link :to="{ name: 'landing' }" class="flex items-center gap-2.5 self-start">
                 <BrandMark :size="44" />
-                <span class="font-display text-xl font-semibold tracking-tight text-brand-950">recepia</span>
+                <span class="font-display text-xl font-semibold tracking-tight text-brand-950">pilo</span>
             </router-link>
 
             <div class="mx-auto flex w-full max-w-sm flex-1 flex-col justify-center py-12">
@@ -91,7 +91,7 @@ async function handleSubmit() {
 
                 <p class="mt-8 text-sm text-sand-500">
                     ¿Aún no tienes cuenta?
-                    <a href="https://wa.me/573024720171?text=Hola%2C%20quiero%20crear%20una%20cuenta%20en%20Recepia" target="_blank" rel="noopener" class="font-medium text-brand-700 hover:underline">Escríbenos por WhatsApp</a>
+                    <a href="https://wa.me/573024720171?text=Hola%2C%20quiero%20crear%20una%20cuenta%20en%20Pilo" target="_blank" rel="noopener" class="font-medium text-brand-700 hover:underline">Escríbenos por WhatsApp</a>
                     y te acompañamos en el alta.
                 </p>
             </div>
@@ -119,7 +119,7 @@ async function handleSubmit() {
                         <span class="mt-1 h-2 w-2 shrink-0 rounded-full bg-amber-400" />
                         <div>
                             <p class="text-sm font-medium text-white">Cita confirmada · 3:00 pm</p>
-                            <p class="mt-1 text-sm text-brand-100/70">Recepia atendió, propuso horarios y agendó — mientras el dueño trabajaba.</p>
+                            <p class="mt-1 text-sm text-brand-100/70">Pilo atendió, propuso horarios y agendó — mientras el dueño trabajaba.</p>
                         </div>
                     </div>
                 </div>
@@ -127,7 +127,7 @@ async function handleSubmit() {
 
             <div class="relative flex items-center gap-2.5">
                 <BrandMark :size="40" variant="inverse" />
-                <span class="font-display text-lg font-semibold tracking-tight text-white">recepia</span>
+                <span class="font-display text-lg font-semibold tracking-tight text-white">pilo</span>
             </div>
         </div>
     </div>

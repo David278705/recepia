@@ -28,14 +28,14 @@ class VerifyWhatsappConnectionsTest extends TestCase
             'connection_status' => 'conectado',
         ]);
 
-        $this->artisan('recepia:verificar-conexiones')->assertSuccessful();
+        $this->artisan('pilo:verificar-conexiones')->assertSuccessful();
 
         $this->assertSame('error', $account->fresh()->connection_status);
         Notification::assertSentTo($admin, WhatsappConnectionAlert::class);
 
         // Segunda corrida con la conexión aún caída: no alerta de nuevo.
         Notification::fake();
-        $this->artisan('recepia:verificar-conexiones')->assertSuccessful();
+        $this->artisan('pilo:verificar-conexiones')->assertSuccessful();
         Notification::assertNothingSent();
     }
 
@@ -56,7 +56,7 @@ class VerifyWhatsappConnectionsTest extends TestCase
             'connection_status' => 'error', // se recupera sola
         ]);
 
-        $this->artisan('recepia:verificar-conexiones')->assertSuccessful();
+        $this->artisan('pilo:verificar-conexiones')->assertSuccessful();
 
         $fresh = $account->fresh();
         $this->assertSame('conectado', $fresh->connection_status);

@@ -26,7 +26,7 @@ class AppServiceProvider extends ServiceProvider
         // no se puede limitar por negocio antes de identificarlo — esto es
         // una defensa contra flood/abuso, no fairness por tenant.
         RateLimiter::for('whatsapp-webhook', function ($request) {
-            return Limit::perMinute(config('recepia.whatsapp.webhook_rate_limit'))->by($request->ip());
+            return Limit::perMinute(config('pilo.whatsapp.webhook_rate_limit'))->by($request->ip());
         });
     }
 }

@@ -147,7 +147,7 @@ class ProcessIncomingMessageTest extends TestCase
 
     public function test_unsupported_message_type_escalates_when_configured(): void
     {
-        Config::set('recepia.whatsapp.unsupported_message_action', 'escalate');
+        Config::set('pilo.whatsapp.unsupported_message_action', 'escalate');
 
         $payload = $this->payloadFor(['from' => '573009998888', 'id' => 'wamid.LOC1', 'type' => 'location']);
 

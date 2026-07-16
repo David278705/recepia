@@ -347,7 +347,7 @@ class SubscriptionTest extends TestCase
                 'data' => [
                     'id' => 'trx-widget-1',
                     'status' => 'APPROVED',
-                    'reference' => 'recepia-sub-'.$subscription->id.'-abc123def456',
+                    'reference' => 'pilo-sub-'.$subscription->id.'-abc123def456',
                     'amount_in_cents' => 8000000,
                     'currency' => 'COP',
                 ],
@@ -374,7 +374,7 @@ class SubscriptionTest extends TestCase
                 'data' => [
                     'id' => 'trx-ajena',
                     'status' => 'APPROVED',
-                    'reference' => 'recepia-sub-'.$otherSubscription->id.'-abc123def456',
+                    'reference' => 'pilo-sub-'.$otherSubscription->id.'-abc123def456',
                     'amount_in_cents' => 8000000,
                     'currency' => 'COP',
                 ],
@@ -399,7 +399,7 @@ class SubscriptionTest extends TestCase
             'current_period_ends_at' => null,
         ]);
 
-        $reference = 'recepia-sub-'.$subscription->id.'-webhookref123';
+        $reference = 'pilo-sub-'.$subscription->id.'-webhookref123';
         $timestamp = time();
         $checksum = hash('sha256', 'trx-widget-web'.'APPROVED'.$timestamp.'test_events_secret');
 
@@ -433,7 +433,7 @@ class SubscriptionTest extends TestCase
 
         $this->fakeWompiHappyPath();
 
-        $this->artisan('recepia:cobrar-suscripciones')->assertSuccessful();
+        $this->artisan('pilo:cobrar-suscripciones')->assertSuccessful();
 
         Http::assertSent(function ($request) {
             if (! str_ends_with($request->url(), '/transactions') || $request->method() !== 'POST') {
@@ -484,7 +484,7 @@ class SubscriptionTest extends TestCase
 
     public function test_grace_period_keeps_access_after_period_ends(): void
     {
-        config(['recepia.billing.grace_days' => 5]);
+        config(['pilo.billing.grace_days' => 5]);
 
         $business = Business::factory()->create(['monthly_price_cents' => 8000000]);
         Subscription::factory()->create([
@@ -504,7 +504,7 @@ class SubscriptionTest extends TestCase
 
     public function test_charge_command_expires_transfer_subscription_after_grace(): void
     {
-        config(['recepia.billing.grace_days' => 5]);
+        config(['pilo.billing.grace_days' => 5]);
 
         $business = Business::factory()->create(['monthly_price_cents' => 8000000]);
         $subscription = Subscription::factory()->create([
@@ -516,7 +516,7 @@ class SubscriptionTest extends TestCase
 
         Http::fake();
 
-        $this->artisan('recepia:cobrar-suscripciones')->assertSuccessful();
+        $this->artisan('pilo:cobrar-suscripciones')->assertSuccessful();
 
         $this->assertSame('vencida', $subscription->fresh()->status);
         Http::assertNothingSent();
@@ -525,7 +525,7 @@ class SubscriptionTest extends TestCase
 
     public function test_charge_command_does_not_expire_transfer_subscription_within_grace(): void
     {
-        config(['recepia.billing.grace_days' => 5]);
+        config(['pilo.billing.grace_days' => 5]);
 
         $business = Business::factory()->create(['monthly_price_cents' => 8000000]);
         $subscription = Subscription::factory()->create([
@@ -537,7 +537,7 @@ class SubscriptionTest extends TestCase
 
         Http::fake();
 
-        $this->artisan('recepia:cobrar-suscripciones')->assertSuccessful();
+        $this->artisan('pilo:cobrar-suscripciones')->assertSuccessful();
 
         $this->assertSame('activa', $subscription->fresh()->status);
         $this->actingAs($business->owner)->getJson('/api/dashboard')->assertOk();
@@ -553,7 +553,7 @@ class SubscriptionTest extends TestCase
 
         $this->fakeWompiHappyPath();
 
-        $this->artisan('recepia:cobrar-suscripciones')->assertSuccessful();
+        $this->artisan('pilo:cobrar-suscripciones')->assertSuccessful();
 
         $subscription->refresh();
         $this->assertSame('activa', $subscription->status);
@@ -572,7 +572,7 @@ class SubscriptionTest extends TestCase
 
         Http::fake();
 
-        $this->artisan('recepia:cobrar-suscripciones')->assertSuccessful();
+        $this->artisan('pilo:cobrar-suscripciones')->assertSuccessful();
 
         $this->assertSame('cancelada', $subscription->fresh()->status);
         Http::assertNothingSent();

@@ -28,7 +28,7 @@ async function handleSubmit() {
     <div class="flex min-h-screen flex-col bg-white px-6 py-8 sm:px-12">
         <router-link :to="{ name: 'landing' }" class="flex items-center gap-2.5 self-start">
             <BrandMark :size="44" />
-            <span class="font-display text-xl font-semibold tracking-tight text-brand-950">recepia</span>
+            <span class="font-display text-xl font-semibold tracking-tight text-brand-950">pilo</span>
         </router-link>
 
         <div class="mx-auto flex w-full max-w-sm flex-1 flex-col justify-center py-12">

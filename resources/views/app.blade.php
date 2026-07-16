@@ -3,13 +3,14 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Recepia · Tu WhatsApp, siempre atendido</title>
-    <meta name="description" content="Recepia atiende el WhatsApp de tu negocio: responde en segundos, agenda citas contra tu calendario real y te pasa la conversación cuando hace falta una persona. En tu mismo número.">
+    <title>{{ config('brand.name') }} · {{ config('brand.tagline') }}</title>
+    <meta name="description" content="{{ config('brand.name') }} atiende el WhatsApp de tu negocio: responde en segundos, agenda citas contra tu calendario real y te pasa la conversación cuando hace falta una persona. En tu mismo número.">
     <meta name="theme-color" content="#063d37">
     <link rel="icon" type="image/png" href="/favicon.png">
     <link rel="apple-touch-icon" href="/apple-touch-icon.png">
-    <meta property="og:title" content="Recepia · Tu WhatsApp, siempre atendido">
-    <meta property="og:description" content="Recepia atiende el WhatsApp de tu negocio: responde en segundos, agenda citas y escala a una persona cuando hace falta. En tu mismo número.">
+    <link rel="manifest" href="/manifest.webmanifest">
+    <meta property="og:title" content="{{ config('brand.name') }} · {{ config('brand.tagline') }}">
+    <meta property="og:description" content="Pilo atiende el WhatsApp de tu negocio: responde en segundos, agenda citas y escala a una persona cuando hace falta. En tu mismo número.">
     <meta property="og:image" content="/img/logo-round.png">
     <meta property="og:type" content="website">
     <link rel="preconnect" href="https://fonts.googleapis.com">

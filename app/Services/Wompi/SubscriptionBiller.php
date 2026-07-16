@@ -103,7 +103,7 @@ class SubscriptionBiller
         $subscription->save();
 
         $amount = (int) $subscription->price_cents;
-        $reference = 'recepia-sub-'.$subscription->id.'-'.Str::lower(Str::random(12));
+        $reference = 'pilo-sub-'.$subscription->id.'-'.Str::lower(Str::random(12));
         $acceptance = $this->wompi->acceptanceToken();
 
         [$paymentMethod, $customerData, $urlPath] = match ($method) {
@@ -118,7 +118,7 @@ class SubscriptionBiller
                     'user_legal_id_type' => $input['legal_id_type'],
                     'user_legal_id' => $input['legal_id'],
                     // DaviPlata acepta máximo 30 caracteres aquí.
-                    'payment_description' => mb_strimwidth('Suscripción RecepIA', 0, 30),
+                    'payment_description' => mb_strimwidth('Suscripción Pilo', 0, 30),
                 ],
                 null,
                 'payment_method.extra.url',
@@ -130,7 +130,7 @@ class SubscriptionBiller
                     'user_legal_id_type' => $input['legal_id_type'],
                     'user_legal_id' => $input['legal_id'],
                     'financial_institution_code' => (string) $input['financial_institution_code'],
-                    'payment_description' => mb_strimwidth('Suscripción RecepIA — '.$business->name, 0, 64),
+                    'payment_description' => mb_strimwidth('Suscripción Pilo — '.$business->name, 0, 64),
                 ],
                 ['phone_number' => $input['phone'], 'full_name' => $input['full_name']],
                 'payment_method.extra.async_payment_url',
@@ -230,11 +230,13 @@ class SubscriptionBiller
 
     /**
      * Resuelve la suscripción a la que pertenece una referencia nuestra
-     * ('recepia-sub-{id}-...'). Devuelve null para referencias ajenas.
+     * ('pilo-sub-{id}-...'). Devuelve null para referencias ajenas.
      */
     public function subscriptionFromReference(string $reference): ?Subscription
     {
-        if (! preg_match('/^recepia-sub-(\d+)-/', $reference, $matches)) {
+        // Acepta también el prefijo anterior al rebrand (recepia-sub-) para no
+        // dejar huérfanas transacciones creadas antes del cambio de marca.
+        if (! preg_match('/^(?:pilo|recepia)-sub-(\d+)-/', $reference, $matches)) {
             return null;
         }
 
@@ -282,7 +284,7 @@ class SubscriptionBiller
             throw new RuntimeException('La suscripción no tiene una fuente de pago.');
         }
 
-        $reference = 'recepia-sub-'.$subscription->id.'-'.Str::lower(Str::random(12));
+        $reference = 'pilo-sub-'.$subscription->id.'-'.Str::lower(Str::random(12));
 
         $transaction = $this->wompi->chargePaymentSource(
             $subscription->wompi_payment_source_id,

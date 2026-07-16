@@ -1,6 +1,6 @@
-# RecepIA — Agente de IA recepcionista de WhatsApp 24/7
+# Pilo — Agente de IA recepcionista de WhatsApp 24/7
 
-RecepIA es un agente de IA que atiende por WhatsApp a los clientes de negocios
+Pilo es un agente de IA que atiende por WhatsApp a los clientes de negocios
 pequeños (barberías, clínicas estéticas, consultorios, restaurantes,
 talleres): responde preguntas frecuentes usando solo la información que el
 dueño configuró, propone horarios y agenda citas, y escala a un humano
@@ -94,7 +94,7 @@ El MVP completo (fases 0-6 de `PLAN.md`) ya está implementado.
    Esto crea:
    - Un `super_admin`: `jdavid.lozano1404@gmail.com` / contraseña en
      `ADMIN_PASSWORD` (o el fallback del seeder si no la defines).
-   - Un negocio demo ("Barbería El Corte", dueño `demo@recepia.test` /
+   - Un negocio demo ("Barbería El Corte", dueño `demo@pilo.test` /
      `password`) con servicios, horarios, FAQs, tres contactos con
      conversaciones en distintos estados (bot activo, escalada, cerrada) y
      varias citas (pasadas y futuras).
@@ -110,13 +110,13 @@ El MVP completo (fases 0-6 de `PLAN.md`) ya está implementado.
 ### Iterar el prompt del agente sin WhatsApp
 
 ```
-php artisan recepia:simular "hola, tienen turno mañana?"
+php artisan pilo:simular "hola, tienen turno mañana?"
 ```
 
 Ejecuta el agente contra el negocio demo (o el que indiques con
 `--business=<slug|id>`) sin pasar por WhatsApp ni crear citas/escalaciones
 reales — usa el modo dry-run del agente. Mantiene el hilo de la conversación
-entre llamadas (guardado en `storage/app/recepia-simular/`); usa `--reset`
+entre llamadas (guardado en `storage/app/pilo-simular/`); usa `--reset`
 para empezar de cero. El panel también tiene un chat de prueba equivalente
 en Configuración → "Probar mi bot".
 
@@ -157,7 +157,7 @@ credenciales de WhatsApp es manual desde el panel de admin:
 2. En **WhatsApp Manager**, genera un **token de acceso** para el número
    (permanente o de larga duración) y anota el `Phone Number ID` y el
    `WhatsApp Business Account ID (WABA ID)`.
-3. En RecepIA, entra como `super_admin` → **Panel de negocios** → **+ Nuevo
+3. En Pilo, entra como `super_admin` → **Panel de negocios** → **+ Nuevo
    negocio** (o edita uno existente) → sección **Conexión de WhatsApp**:
    completa Phone Number ID, WABA ID, número en formato E.164, y el token de
    acceso.
@@ -315,4 +315,4 @@ Variables: `META_APP_ID`, `META_APP_SECRET` (o se reutiliza
 5. Prueba de fuego: envía un mensaje al número y confirma que el bot responde.
 6. Recuérdale al dueño abrir su app WhatsApp Business al menos cada 2 semanas
    (si no, la coexistencia se cae; el comando diario
-   `recepia:verificar-conexiones` lo detecta y alerta por correo).
+   `pilo:verificar-conexiones` lo detecta y alerta por correo).

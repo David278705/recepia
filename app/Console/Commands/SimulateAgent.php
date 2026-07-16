@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\Storage;
  */
 class SimulateAgent extends Command
 {
-    protected $signature = 'recepia:simular
+    protected $signature = 'pilo:simular
         {mensaje : Lo que "escribe" el cliente}
         {--business= : Slug o ID del negocio (por defecto, el negocio demo)}
         {--reset : Empezar una conversación de prueba nueva en vez de continuar la anterior}';
@@ -31,7 +31,7 @@ class SimulateAgent extends Command
             return self::FAILURE;
         }
 
-        $sessionPath = "recepia-simular/{$business->id}.json";
+        $sessionPath = "pilo-simular/{$business->id}.json";
 
         if ($this->option('reset')) {
             Storage::delete($sessionPath);

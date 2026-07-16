@@ -77,7 +77,7 @@ class WhatsAppWebhookTest extends TestCase
 
     public function test_handle_is_rate_limited_per_ip(): void
     {
-        Config::set('recepia.whatsapp.webhook_rate_limit', 2);
+        Config::set('pilo.whatsapp.webhook_rate_limit', 2);
         Queue::fake();
 
         $payload = ['object' => 'whatsapp_business_account', 'entry' => []];

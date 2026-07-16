@@ -26,7 +26,7 @@ const updatedAt = "11 de julio de 2026";
                     <BrandMark :size="40" />
                     <span
                         class="font-display text-lg font-semibold tracking-tight text-brand-950"
-                        >recepia</span
+                        >pilo</span
                     >
                 </router-link>
                 <router-link
@@ -48,7 +48,7 @@ const updatedAt = "11 de julio de 2026";
             </p>
 
             <div
-                class="prose-recepia mt-8 flex flex-col gap-6 text-[15px] leading-relaxed text-sand-700"
+                class="prose-pilo mt-8 flex flex-col gap-6 text-[15px] leading-relaxed text-sand-700"
             >
                 <section>
                     <h2
@@ -57,7 +57,7 @@ const updatedAt = "11 de julio de 2026";
                         1. Quiénes somos
                     </h2>
                     <p>
-                        Recepia es un servicio operado por
+                        Pilo es un servicio operado por
                         <strong>{{ company.name }}</strong
                         >, identificado con <strong>{{ company.nit }}</strong
                         >, con domicilio en {{ company.address }}. Puedes
@@ -68,7 +68,7 @@ const updatedAt = "11 de julio de 2026";
                             >{{ company.email }}</a
                         >
                         o por WhatsApp al {{ company.whatsapp }}. Estos términos
-                        regulan el uso de la plataforma Recepia (el "Servicio")
+                        regulan el uso de la plataforma Pilo (el "Servicio")
                         y constituyen el contrato entre tú y nosotros. Al
                         contratar o usar el Servicio aceptas estos términos.
                     </p>
@@ -81,7 +81,7 @@ const updatedAt = "11 de julio de 2026";
                         2. Descripción del servicio
                     </h2>
                     <p>
-                        Recepia es un software por suscripción (SaaS) que
+                        Pilo es un software por suscripción (SaaS) que
                         conecta el número de WhatsApp de tu negocio con un
                         recepcionista de inteligencia artificial que responde
                         mensajes de tus clientes, resuelve preguntas y agenda
@@ -230,7 +230,7 @@ const updatedAt = "11 de julio de 2026";
                             >Política de tratamiento de datos
                             personales</router-link
                         >. Respecto de los datos de tus clientes, tu negocio
-                        actúa como responsable del tratamiento y Recepia como
+                        actúa como responsable del tratamiento y Pilo como
                         encargado, procesándolos únicamente para prestarte el
                         Servicio.
                     </p>

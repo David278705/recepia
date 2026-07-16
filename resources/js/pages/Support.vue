@@ -173,7 +173,7 @@ function fmt(dt) {
                             :class="reply.user?.role === 'super_admin' ? 'bg-brand-50' : 'bg-sand-50'"
                         >
                             <p class="mb-1 text-xs font-medium" :class="reply.user?.role === 'super_admin' ? 'text-brand-700' : 'text-sand-500'">
-                                {{ reply.user?.role === 'super_admin' ? 'Soporte Recepia' : 'Tú' }} · {{ fmt(reply.created_at) }}
+                                {{ reply.user?.role === 'super_admin' ? 'Soporte Pilo' : 'Tú' }} · {{ fmt(reply.created_at) }}
                             </p>
                             <p class="whitespace-pre-wrap text-sm text-sand-700">{{ reply.message }}</p>
                         </div>

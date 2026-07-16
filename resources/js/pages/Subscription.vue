@@ -353,7 +353,7 @@ async function resumeSubscription() {
                 <div class="flex items-center gap-4">
                     <img :src="mascot" alt="" class="h-20 w-auto shrink-0 select-none" draggable="false">
                     <p class="text-sm text-sand-600">
-                        Tu negocio no tiene un cobro de suscripción configurado. Disfruta de RecepIA sin costo. 🎉
+                        Tu negocio no tiene un cobro de suscripción configurado. Disfruta de Pilo sin costo. 🎉
                     </p>
                 </div>
             </Card>
@@ -600,7 +600,7 @@ async function resumeSubscription() {
                                 <router-link :to="{ name: 'terms' }" target="_blank" class="text-brand-700 underline">términos y condiciones</router-link>
                                 y la
                                 <router-link :to="{ name: 'privacy' }" target="_blank" class="text-brand-700 underline">política de datos personales</router-link>
-                                de Recepia, y los
+                                de Pilo, y los
                                 <a href="https://wompi.co/terminos-y-condiciones/" target="_blank" rel="noopener" class="text-brand-700 underline">términos y condiciones de Wompi</a>.
                             </span>
                         </label>

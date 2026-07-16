@@ -29,7 +29,7 @@ class WhatsAppWebhookController extends Controller
     public function handle(Request $request): Response
     {
         if (! $this->hasValidSignature($request)) {
-            Log::warning('RecepIA: firma de webhook de WhatsApp inválida o ausente, evento rechazado.');
+            Log::warning('Pilo: firma de webhook de WhatsApp inválida o ausente, evento rechazado.');
 
             return response('Forbidden', 403);
         }

@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Notification;
 
 class VerifyWhatsappConnections extends Command
 {
-    protected $signature = 'recepia:verificar-conexiones';
+    protected $signature = 'pilo:verificar-conexiones';
 
     protected $description = 'Verifica contra la Graph API el estado de cada número conectado y alerta si una conexión se degradó.';
 

@@ -1,9 +1,9 @@
 {
     "$schema": "https://getcomposer.org/schema.json",
-    "name": "recepia/recepia",
+    "name": "pilo/pilo",
     "type": "project",
-    "description": "RecepIA - agente de IA recepcionista de WhatsApp 24/7 para negocios pequeños.",
-    "keywords": ["laravel", "recepia", "whatsapp", "ai"],
+    "description": "Pilo - agente de IA recepcionista de WhatsApp 24/7 para negocios pequeños.",
+    "keywords": ["laravel", "pilo", "whatsapp", "ai"],
     "license": "MIT",
     "require": {
         "php": "^8.2",
