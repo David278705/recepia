@@ -270,7 +270,7 @@ async function handleDelete() {
                     <label class="mb-1 block text-sm font-medium text-sand-700">Descripción del negocio</label>
                     <textarea
                         v-model="form.description" rows="2" maxlength="2000"
-                        placeholder="Qué hace el negocio, qué lo distingue, qué debe saber el bot para presentarlo bien…"
+                        placeholder="Qué hace el negocio, qué lo distingue, qué debe saber Pilo para presentarlo bien…"
                         class="w-full rounded-lg border border-sand-200 px-3 py-2 text-sm focus:border-brand-500 focus:outline-none"
                     />
                     <p class="mt-1 text-xs text-sand-400">El bot usa esta descripción como contexto al responder.</p>
@@ -306,12 +306,12 @@ async function handleDelete() {
                     <p v-if="errors.monthly_price" class="mt-1 text-xs text-amber-700">{{ errors.monthly_price[0] }}</p>
                 </div>
                 <div>
-                    <label class="mb-1 block text-sm font-medium text-sand-700">Límite de mensajes del bot / 24 h</label>
+                    <label class="mb-1 block text-sm font-medium text-sand-700">Límite de mensajes de Pilo / 24 h</label>
                     <input
                         v-model="form.daily_message_limit" type="number" min="0" max="10000" step="1"
                         class="w-full rounded-lg border border-sand-200 px-3 py-2 text-sm focus:border-brand-500 focus:outline-none"
                     >
-                    <p class="mt-1 text-xs text-sand-400">Respuestas del bot por conversación en 24 h; al agotarse, la conversación se escala al dueño. 0 = sin límite.</p>
+                    <p class="mt-1 text-xs text-sand-400">Respuestas de Pilo por conversación en 24 h; al agotarse, la conversación se escala al dueño. 0 = sin límite.</p>
                     <p v-if="errors.daily_message_limit" class="mt-1 text-xs text-amber-700">{{ errors.daily_message_limit[0] }}</p>
                 </div>
                 <div class="sm:col-span-2">
@@ -327,11 +327,11 @@ async function handleDelete() {
                             <input v-model="form.capabilities" type="checkbox" value="cotizar"> Registrar cotizaciones
                         </label>
                     </div>
-                    <p class="mt-1 text-xs text-sand-400">Define qué herramientas usa el bot. Sin ninguna marcada solo responde preguntas y escala.</p>
+                    <p class="mt-1 text-xs text-sand-400">Define qué sabe hacer Pilo. Sin ninguna marcada solo responde preguntas y escala.</p>
                     <p v-if="errors.capabilities" class="mt-1 text-xs text-amber-700">{{ errors.capabilities[0] }}</p>
                 </div>
                 <div>
-                    <label class="mb-1 block text-sm font-medium text-sand-700">Tono del bot</label>
+                    <label class="mb-1 block text-sm font-medium text-sand-700">Tono de Pilo</label>
                     <select v-model="form.tone" class="w-full rounded-lg border border-sand-200 px-3 py-2 text-sm focus:border-brand-500 focus:outline-none">
                         <option value="cercano">Cercano</option>
                         <option value="formal">Formal</option>
@@ -345,7 +345,7 @@ async function handleDelete() {
                     </select>
                 </div>
                 <div class="sm:col-span-2">
-                    <label class="mb-1 block text-sm font-medium text-sand-700">Instrucciones extra para el bot</label>
+                    <label class="mb-1 block text-sm font-medium text-sand-700">Instrucciones extra para Pilo</label>
                     <textarea v-model="form.extra_instructions" rows="2" class="w-full rounded-lg border border-sand-200 px-3 py-2 text-sm focus:border-brand-500 focus:outline-none" />
                 </div>
             </div>

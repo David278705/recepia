@@ -26,7 +26,7 @@ const updatedAt = "11 de julio de 2026";
                     <BrandMark :size="40" />
                     <span
                         class="font-display text-lg font-semibold tracking-tight text-brand-950"
-                        >recepia</span
+                        >pilo</span
                     >
                 </router-link>
                 <router-link
@@ -68,7 +68,7 @@ const updatedAt = "11 de julio de 2026";
                             >{{ company.email }}</a
                         >
                         y WhatsApp {{ company.whatsapp }} (en adelante,
-                        "Recepia").
+                        "Pilo").
                     </p>
                 </section>
 
@@ -96,8 +96,8 @@ const updatedAt = "11 de julio de 2026";
                             >
                             número de teléfono, nombre de perfil, contenido de
                             los mensajes y citas agendadas. Respecto de estos
-                            datos, el negocio que contrata Recepia actúa como
-                            responsable del tratamiento y Recepia como
+                            datos, el negocio que contrata Pilo actúa como
+                            responsable del tratamiento y Pilo como
                             encargado.
                         </li>
                         <li>
@@ -244,7 +244,7 @@ const updatedAt = "11 de julio de 2026";
                         </li>
                     </ul>
                     <p class="mt-2">
-                        Si eres cliente de un negocio que usa Recepia y quieres
+                        Si eres cliente de un negocio que usa Pilo y quieres
                         ejercer derechos sobre tus conversaciones, puedes
                         dirigirte al negocio (responsable) o a nosotros;
                         canalizaremos la solicitud.

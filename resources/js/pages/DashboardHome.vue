@@ -116,7 +116,7 @@ onMounted(async () => {
                 </Card>
                 <Card>
                     <div class="flex items-center gap-2 text-xs font-semibold tracking-wide text-sand-500 uppercase">
-                        <SparklesIcon class="h-4 w-4" /> Citas del bot (mes)
+                        <SparklesIcon class="h-4 w-4" /> Citas que Pilo agendó (mes)
                     </div>
                     <p class="mt-2 font-mono text-3xl text-brand-800">{{ stats.appointments_booked_by_bot_this_month }}</p>
                 </Card>
@@ -128,7 +128,7 @@ onMounted(async () => {
                         <h3 class="font-display text-sm font-semibold text-brand-900">Conversaciones por día — últimos 7 días</h3>
                         <span class="flex items-center gap-4 text-xs text-sand-500">
                             <span class="flex items-center gap-1.5"><UsersIcon class="h-4 w-4" /> {{ stats.total_contacts }} contactos</span>
-                            <span class="flex items-center gap-1.5"><BoltIcon class="h-4 w-4" /> {{ stats.bot_messages_this_month }} respuestas del bot este mes</span>
+                            <span class="flex items-center gap-1.5"><BoltIcon class="h-4 w-4" /> {{ stats.bot_messages_this_month }} respuestas de Pilo este mes</span>
                         </span>
                     </div>
                     <BarChart :items="activityItems" unit="conversaciones" />
@@ -149,7 +149,7 @@ onMounted(async () => {
                             <span class="w-12 shrink-0 font-mono text-sm text-brand-800">{{ appt.time }}</span>
                             <span class="min-w-0 flex-1">
                                 <span class="block truncate text-sm font-medium text-sand-800">{{ appt.contact || 'Sin nombre' }}</span>
-                                <span class="block truncate text-xs text-sand-500">{{ appt.service }}<template v-if="appt.origin === 'bot'"> · agendada por el bot</template></span>
+                                <span class="block truncate text-xs text-sand-500">{{ appt.service }}<template v-if="appt.origin === 'bot'"> · agendada por Pilo</template></span>
                             </span>
                             <Badge :tone="statusLabels[appt.status]?.tone ?? 'sand'">{{ statusLabels[appt.status]?.text ?? appt.status }}</Badge>
                         </li>

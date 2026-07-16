@@ -40,6 +40,7 @@ class BusinessController extends Controller
             'phone' => ['sometimes', 'nullable', 'string', 'max:32'],
             'timezone' => ['sometimes', 'nullable', 'string', 'max:255'],
             'tone' => ['sometimes', 'required', 'in:formal,cercano'],
+            'show_brand' => ['sometimes', 'boolean'],
             'extra_instructions' => ['sometimes', 'nullable', 'string'],
         ]);
 

@@ -22,7 +22,7 @@ class WompiWebhookController extends Controller
         $payload = $request->json()->all();
 
         if (! $wompi->isValidEvent($payload)) {
-            Log::warning('RecepIA: evento de Wompi con firma inválida, ignorado.');
+            Log::warning('Pilo: evento de Wompi con firma inválida, ignorado.');
 
             return response()->json(['message' => 'Firma inválida.'], 403);
         }
@@ -38,7 +38,7 @@ class WompiWebhookController extends Controller
 
         // Las transacciones creadas por el Widget de checkout no pasan por
         // nuestro backend: la primera noticia es este evento. Se identifican
-        // por la referencia ('recepia-sub-{id}-...').
+        // por la referencia ('pilo-sub-{id}-...').
         if (! $payment && ! empty($transaction['id'])) {
             $subscription = $biller->subscriptionFromReference((string) ($transaction['reference'] ?? ''));
 

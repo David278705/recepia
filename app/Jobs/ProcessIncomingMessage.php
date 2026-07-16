@@ -56,7 +56,7 @@ class ProcessIncomingMessage implements ShouldQueue
         $account = $phoneNumberId ? WhatsappAccount::where('phone_number_id', $phoneNumberId)->first() : null;
 
         if (! $account) {
-            Log::warning('RecepIA: mensaje de WhatsApp para un phone_number_id sin negocio conectado.', ['phone_number_id' => $phoneNumberId]);
+            Log::warning('Pilo: mensaje de WhatsApp para un phone_number_id sin negocio conectado.', ['phone_number_id' => $phoneNumberId]);
 
             return;
         }
@@ -64,7 +64,7 @@ class ProcessIncomingMessage implements ShouldQueue
         $wamid = $message['id'] ?? null;
 
         if (! $wamid) {
-            Log::warning('RecepIA: mensaje de WhatsApp sin wamid, se descarta.', ['business_id' => $account->business_id]);
+            Log::warning('Pilo: mensaje de WhatsApp sin wamid, se descarta.', ['business_id' => $account->business_id]);
 
             return;
         }
@@ -77,7 +77,7 @@ class ProcessIncomingMessage implements ShouldQueue
         $contactWaId = $isEcho ? ($message['to'] ?? null) : ($message['from'] ?? null);
 
         if (! $contactWaId) {
-            Log::warning('RecepIA: no se pudo determinar el contacto del mensaje (echo sin destinatario).', ['business_id' => $account->business_id, 'wamid' => $wamid]);
+            Log::warning('Pilo: no se pudo determinar el contacto del mensaje (echo sin destinatario).', ['business_id' => $account->business_id, 'wamid' => $wamid]);
 
             return;
         }
@@ -114,7 +114,7 @@ class ProcessIncomingMessage implements ShouldQueue
 
         if ($isEcho) {
             $conversation->update([
-                'bot_paused_until' => now()->addMinutes(config('recepia.whatsapp.bot_pause_minutes')),
+                'bot_paused_until' => now()->addMinutes(config('pilo.whatsapp.bot_pause_minutes')),
             ]);
 
             return; // nunca se trata un echo del dueño como entrada del cliente
@@ -177,13 +177,13 @@ class ProcessIncomingMessage implements ShouldQueue
         try {
             (new WhatsAppService($account))->markAsRead($wamid);
         } catch (\Throwable $e) {
-            Log::warning('RecepIA: no se pudo marcar como leído el mensaje de WhatsApp.', ['wamid' => $wamid, 'error' => $e->getMessage()]);
+            Log::warning('Pilo: no se pudo marcar como leído el mensaje de WhatsApp.', ['wamid' => $wamid, 'error' => $e->getMessage()]);
         }
     }
 
     protected function handleUnsupportedMessage(WhatsappAccount $account, Conversation $conversation, Contact $contact): void
     {
-        $action = config('recepia.whatsapp.unsupported_message_action');
+        $action = config('pilo.whatsapp.unsupported_message_action');
 
         if ($action === 'escalate') {
             $conversation->update(['status' => 'escalada']);
@@ -196,7 +196,7 @@ class ProcessIncomingMessage implements ShouldQueue
         }
 
         try {
-            $reply = config('recepia.whatsapp.unsupported_message_reply');
+            $reply = config('pilo.whatsapp.unsupported_message_reply');
             $response = (new WhatsAppService($account))->sendText($contact->wa_id, $reply);
 
             $conversation->messages()->create([
@@ -209,7 +209,7 @@ class ProcessIncomingMessage implements ShouldQueue
                 'delivery_status' => 'sent',
             ]);
         } catch (\Throwable $e) {
-            Log::warning('RecepIA: no se pudo enviar la respuesta de tipo no soportado.', ['conversation_id' => $conversation->id, 'error' => $e->getMessage()]);
+            Log::warning('Pilo: no se pudo enviar la respuesta de tipo no soportado.', ['conversation_id' => $conversation->id, 'error' => $e->getMessage()]);
         }
     }
 
@@ -263,7 +263,7 @@ class ProcessIncomingMessage implements ShouldQueue
                 'delivery_status' => 'sent',
             ]);
         } catch (\Throwable $e) {
-            Log::warning('RecepIA: no se pudo avisar al cliente del límite de mensajes.', ['conversation_id' => $conversation->id, 'error' => $e->getMessage()]);
+            Log::warning('Pilo: no se pudo avisar al cliente del límite de mensajes.', ['conversation_id' => $conversation->id, 'error' => $e->getMessage()]);
         }
     }
 

@@ -34,10 +34,10 @@ class ConversationEscalatedNotification extends Notification implements ShouldQu
         $label = self::REASON_LABELS[$this->reason] ?? $this->reason;
 
         return (new MailMessage)
-            ->subject("Conversación escalada — {$business->name}")
-            ->greeting('Una conversación necesita tu atención 👋')
+            ->subject("Un cliente necesita que lo atiendas tú — {$business->name}")
+            ->greeting('Un cliente necesita que lo atiendas tú 👋')
             ->line("Cliente: {$conversation->contact->name} ({$conversation->contact->wa_id})")
             ->line("Motivo: {$label}")
-            ->line('El bot se silenció en esta conversación hasta que la retomes desde el panel.');
+            ->line(config('brand.name').' se apartó de esta conversación y le avisó al cliente que lo contactarás. Retómala desde tu panel cuando puedas.');
     }
 }

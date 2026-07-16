@@ -15,7 +15,7 @@ use Throwable;
 
 class ChargeDueSubscriptions extends Command
 {
-    protected $signature = 'recepia:cobrar-suscripciones';
+    protected $signature = 'pilo:cobrar-suscripciones';
 
     protected $description = 'Renueva las suscripciones cuyo periodo venció: cobra a la fuente de pago o las marca vencidas/canceladas.';
 

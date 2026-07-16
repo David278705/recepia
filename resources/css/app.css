@@ -52,6 +52,19 @@
     --color-sand-800: #362f27;
     --color-sand-900: #221d18;
     --color-sand-950: #14110d;
+
+    /* ── Tokens semánticos de Pilo — derivados de la mascota (verde WhatsApp
+       corporativo + acento ámbar cálido). Alias sobre la paleta base: cambiar
+       la marca de color se hace aquí, en un solo lugar. ── */
+    --color-pilo-primary: var(--color-brand-600);
+    --color-pilo-primary-dark: var(--color-brand-800);
+    --color-pilo-accent: var(--color-amber-500);
+    --color-pilo-success: var(--color-brand-500);
+    --color-pilo-warning: var(--color-amber-500);
+    --color-pilo-error: #dc2626;
+    /* Escalación pendiente: el color más llamativo del sistema — la métrica
+       que el dueño no puede ignorar. */
+    --color-pilo-escalation: #e11d48;
 }
 
 @layer base {

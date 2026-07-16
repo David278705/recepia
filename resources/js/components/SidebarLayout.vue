@@ -54,7 +54,7 @@ async function stopImpersonating() {
             <div class="flex items-center justify-between px-5 py-5">
                 <router-link :to="{ name: props.homeRoute }" class="flex items-center gap-2.5">
                     <BrandMark :size="44" />
-                    <span class="font-display text-xl font-semibold tracking-tight text-brand-950">recepia</span>
+                    <span class="font-display text-xl font-semibold tracking-tight text-brand-950">pilo</span>
                     <span
                         v-if="brandSuffix"
                         class="rounded-md bg-sand-100 px-1.5 py-0.5 text-[10px] font-semibold tracking-wider text-sand-500 uppercase"
@@ -107,7 +107,7 @@ async function stopImpersonating() {
                 </button>
                 <span class="flex items-center gap-2">
                     <BrandMark :size="36" />
-                    <span class="font-display text-lg font-semibold tracking-tight text-brand-950">recepia</span>
+                    <span class="font-display text-lg font-semibold tracking-tight text-brand-950">pilo</span>
                 </span>
             </div>
 

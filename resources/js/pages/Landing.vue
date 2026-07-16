@@ -45,17 +45,17 @@ const steps = [
     {
         title: "Le enseñas tu negocio",
         description:
-            "Servicios, precios, horarios y preguntas frecuentes. Ese es todo el conocimiento del que Recepia puede hablar — ni más, ni menos.",
+            "Servicios, precios, horarios y preguntas frecuentes. Ese es todo el conocimiento del que Pilo puede hablar — ni más, ni menos.",
     },
     {
-        title: "Recepia atiende",
+        title: "Pilo atiende",
         description:
             "Responde al instante y hace lo que tu negocio necesite: agenda citas con horarios reales, toma pedidos o registra cotizaciones. Cuando algo se sale del guion, te lo pasa a ti.",
     },
     {
         title: "Tú supervisas",
         description:
-            "Desde el panel ves cada conversación, tomas el control cuando quieres y revisas las citas, pedidos y solicitudes que el bot te consiguió.",
+            "Desde el panel ves cada conversación, tomas el control cuando quieres y revisas las citas, pedidos y solicitudes que Pilo te consiguió.",
     },
 ];
 
@@ -68,7 +68,7 @@ const guarantees = [
     {
         title: "Se aparta cuando tú entras",
         description:
-            "Si respondes a un cliente desde tu celular, Recepia lo detecta y guarda silencio en esa conversación.",
+            "Si respondes a un cliente desde tu celular, Pilo lo detecta y guarda silencio en esa conversación.",
     },
     {
         title: "Tus datos, solo tuyos",
@@ -80,7 +80,7 @@ const guarantees = [
 const faqs = [
     {
         q: "¿Tengo que cambiar de número de WhatsApp?",
-        a: "No. Recepia se conecta a tu número actual mediante la WhatsApp Cloud API en modo Coexistence: tú sigues usando tu app de WhatsApp Business con normalidad, y Recepia responde en paralelo desde el mismo número.",
+        a: "No. Pilo se conecta a tu número actual mediante la WhatsApp Cloud API en modo Coexistence: tú sigues usando tu app de WhatsApp Business con normalidad, y Pilo responde en paralelo desde el mismo número.",
     },
     {
         q: "¿Qué pasa si no sabe responder algo?",
@@ -92,7 +92,7 @@ const faqs = [
     },
     {
         q: "¿Y si yo le escribo al cliente desde mi celular?",
-        a: "Recepia lo detecta y pausa el bot en esa conversación durante un rato, para que nunca haya dos respuestas cruzadas. Cuando terminas, retoma solo.",
+        a: "Pilo lo detecta y pausa a Pilo en esa conversación durante un rato, para que nunca haya dos respuestas cruzadas. Cuando terminas, retoma solo.",
     },
     {
         q: "¿Solo sirve para agendar citas?",
@@ -123,7 +123,7 @@ const faqs = [
                     <BrandMark :size="44" />
                     <span
                         class="font-display text-xl font-semibold tracking-tight text-brand-950"
-                        >recepia</span
+                        >pilo</span
                     >
                 </a>
 
@@ -181,7 +181,7 @@ const faqs = [
                         <BrandMark :size="36" />
                         <span
                             class="font-display text-lg font-semibold tracking-tight text-brand-950"
-                            >recepia</span
+                            >pilo</span
                         >
                     </span>
                     <button
@@ -232,13 +232,13 @@ const faqs = [
                     <h1
                         class="mt-5 font-display text-[2.6rem] leading-[1.05] font-medium tracking-tight text-brand-950 sm:text-6xl"
                     >
-                        Tu negocio ya no deja mensajes en visto.
+                        El asistente que nunca deja tu WhatsApp en visto.
                     </h1>
 
                     <p
                         class="mt-6 max-w-lg text-lg leading-relaxed text-sand-600"
                     >
-                        Recepia atiende el WhatsApp de tu negocio como lo haría
+                        Pilo atiende el WhatsApp de tu negocio como lo haría
                         tu mejor recepcionista: responde en segundos, agenda
                         citas contra tu calendario real, toma pedidos, registra
                         cotizaciones y te pasa la conversación cuando de verdad
@@ -270,7 +270,7 @@ const faqs = [
                 <div class="relative mx-auto w-full max-w-[21rem]">
                     <img
                         :src="'/img/robot_saludo_mano.png'"
-                        alt="Recepia, tu recepcionista de IA"
+                        alt="Pilo, tu recepcionista de IA"
                         class="absolute -bottom-6 -left-24 z-10 hidden w-36 select-none drop-shadow-xl lg:block"
                         draggable="false"
                     />
@@ -330,7 +330,7 @@ const faqs = [
                                 <p
                                     class="mt-1 self-end text-[10px] text-sand-400"
                                 >
-                                    Atendido por Recepia · 22:47
+                                    Atendido por Pilo · 22:47
                                 </p>
                             </div>
                         </div>
@@ -416,7 +416,7 @@ const faqs = [
                                     v-for="item in [
                                         'Precios y servicios exactos, nunca aproximados',
                                         'Preguntas frecuentes respondidas al instante',
-                                        'Instrucciones tuyas que el bot respeta al pie de la letra',
+                                        'Instrucciones tuyas que Pilo respeta al pie de la letra',
                                     ]"
                                     :key="item"
                                     class="flex items-start gap-3 text-sand-700"
@@ -465,7 +465,7 @@ const faqs = [
                                 class="mt-4 border-t border-sand-100 pt-3 text-xs text-sand-400"
                             >
                                 El tinte fantasía no estaba configurado —
-                                Recepia no lo inventó: escaló.
+                                Pilo no lo inventó: escaló.
                             </p>
                         </div>
                     </div>
@@ -515,7 +515,7 @@ const faqs = [
                                         </div>
                                         <span
                                             class="rounded-md bg-white px-2 py-0.5 text-[11px] font-semibold text-brand-700"
-                                            >Agendada por Recepia</span
+                                            >Agendada por Pilo</span
                                         >
                                     </div>
                                     <div
@@ -543,7 +543,7 @@ const faqs = [
                                 class="mt-4 text-lg leading-relaxed text-sand-600"
                             >
                                 Si tu negocio trabaja con citas, antes de
-                                proponer un horario Recepia consulta la
+                                proponer un horario Pilo consulta la
                                 disponibilidad real de tu calendario — tus
                                 horarios de atención menos las citas que ya
                                 existen. ¿Lo tuyo son los pedidos o las
@@ -583,7 +583,7 @@ const faqs = [
                                 Un buen recepcionista también sabe cuándo pasar
                                 la llamada. Si el cliente se molesta, pide
                                 hablar con una persona o pregunta algo fuera de
-                                guion, Recepia escala la conversación y te
+                                guion, Pilo escala la conversación y te
                                 avisa. Y si tú entras a responder desde tu
                                 celular, se hace a un lado sin que se lo pidas.
                             </p>
@@ -591,8 +591,8 @@ const faqs = [
                                 <li
                                     v-for="item in [
                                         'Detecta molestia, urgencia o la petición de un humano',
-                                        'Te notifica y silencia el bot en esa conversación',
-                                        'Desde el panel la retomas o se la devuelves al bot',
+                                        'Te notifica y silencia a Pilo en esa conversación',
+                                        'Desde el panel la retomas o se la devuelves a Pilo',
                                     ]"
                                     :key="item"
                                     class="flex items-start gap-3 text-sand-700"
@@ -764,7 +764,7 @@ const faqs = [
                         <p class="mt-4 text-sand-500">
                             ¿Tienes otra?
                             <a
-                                href="https://wa.me/573024720171?text=Hola%2C%20tengo%20una%20pregunta%20sobre%20Recepia"
+                                href="https://wa.me/573024720171?text=Hola%2C%20tengo%20una%20pregunta%20sobre%20Pilo"
                                 target="_blank"
                                 rel="noopener"
                                 class="font-medium text-brand-700 hover:underline"
@@ -827,7 +827,7 @@ const faqs = [
                         class="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row"
                     >
                         <a
-                            href="https://wa.me/573024720171?text=Hola%2C%20quiero%20solicitar%20una%20demo%20de%20Recepia"
+                            href="https://wa.me/573024720171?text=Hola%2C%20quiero%20solicitar%20una%20demo%20de%20Pilo"
                             target="_blank"
                             rel="noopener"
                             class="inline-flex items-center justify-center rounded-xl bg-amber-500 px-7 py-3.5 text-base font-semibold text-brand-950 shadow-lg transition hover:bg-amber-400"
@@ -855,7 +855,7 @@ const faqs = [
                         <BrandMark :size="40" variant="inverse" />
                         <span
                             class="font-display text-lg font-semibold tracking-tight text-white"
-                            >recepia</span
+                            >pilo</span
                         >
                     </a>
                     <nav class="flex flex-wrap items-center gap-x-7 gap-y-2">
@@ -887,7 +887,7 @@ const faqs = [
                     class="mt-10 flex flex-col justify-between gap-2 border-t border-white/10 pt-6 text-xs text-brand-100/50 sm:flex-row"
                 >
                     <p>
-                        © {{ new Date().getFullYear() }} Recepia. Todos los
+                        © {{ new Date().getFullYear() }} Pilo. Todos los
                         derechos reservados.
                     </p>
                     <p>Hecho para atender mejor.</p>

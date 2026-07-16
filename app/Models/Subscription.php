@@ -80,6 +80,6 @@ class Subscription extends Model
 
     public static function graceDays(): int
     {
-        return max(0, (int) config('recepia.billing.grace_days', 5));
+        return max(0, (int) config('pilo.billing.grace_days', 5));
     }
 }

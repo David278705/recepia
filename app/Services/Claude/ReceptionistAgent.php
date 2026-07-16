@@ -30,7 +30,7 @@ class ReceptionistAgent
         $business = $conversation->business;
 
         if (! $business) {
-            Log::error('RecepIA: conversación sin negocio asociado, no se puede invocar al agente.', ['conversation_id' => $conversation->id]);
+            Log::error('Pilo: conversación sin negocio asociado, no se puede invocar al agente.', ['conversation_id' => $conversation->id]);
 
             return;
         }
@@ -47,7 +47,7 @@ class ReceptionistAgent
 
             $this->sendReply($business, $conversation, $result, $system);
         } catch (Throwable $e) {
-            Log::error('RecepIA: el agente falló, se escala la conversación.', [
+            Log::error('Pilo: el agente falló, se escala la conversación.', [
                 'conversation_id' => $conversation->id,
                 'error' => $e->getMessage(),
             ]);
@@ -72,7 +72,7 @@ class ReceptionistAgent
     /**
      * Igual que testReply(), pero devuelve también las herramientas que se
      * invocaron y el conteo de tokens — para depurar el prompt desde
-     * `php artisan recepia:simular`.
+     * `php artisan pilo:simular`.
      *
      * @param  array<int, array{role: string, content: string}>  $messages
      * @return array{text: string, input_tokens: int, output_tokens: int, tool_calls: array}
@@ -138,7 +138,7 @@ class ReceptionistAgent
         $outputTokens = 0;
         $lastResponse = null;
 
-        for ($round = 0; $round < config('recepia.agent.max_tool_rounds', 5); $round++) {
+        for ($round = 0; $round < config('pilo.agent.max_tool_rounds', 5); $round++) {
             $lastResponse = $client->send($messages, $system, $tools);
 
             $inputTokens += $lastResponse['usage']['input_tokens'] ?? 0;
@@ -248,8 +248,16 @@ class ReceptionistAgent
         $description = $business->description ?: 'Sin descripción adicional.';
         $capabilityRules = $this->capabilityRules($business);
 
+        // La marca es para el dueño que paga; el cliente final le pertenece
+        // al negocio: el agente se presenta como asistente DEL NEGOCIO, salvo
+        // que el dueño active mostrar la marca.
+        $identity = $business->show_brand
+            ? 'Eres '.config('brand.name').', el asistente de WhatsApp de '.$business->name.'. Si te presentas, di "Soy '.config('brand.name').', el asistente de '.$business->name.'".'
+            : "Eres el asistente de WhatsApp de {$business->name}. Si te presentas, di \"Soy el asistente de {$business->name}\" — nunca menciones ninguna otra marca ni plataforma.";
+
         return <<<PROMPT
-            Eres el asistente de WhatsApp de {$business->name}, un negocio de tipo "{$business->type}" ubicado en {$business->address}.
+            {$identity}
+            El negocio es de tipo "{$business->type}" y está ubicado en {$business->address}.
             Tu tono es {$tone}.
 
             SOBRE EL NEGOCIO:
@@ -304,7 +312,7 @@ class ReceptionistAgent
 
     protected function buildMessageHistory(Conversation $conversation): array
     {
-        $limit = config('recepia.agent.context_messages', 20);
+        $limit = config('pilo.agent.context_messages', 20);
 
         $mapped = $conversation->messages()
             ->whereIn('origin', ['cliente', 'bot'])
@@ -656,7 +664,7 @@ class ReceptionistAgent
             $response = WhatsAppService::forBusiness($business)->sendText($contact->wa_id, $result['text']);
             $wamid = $response->json('messages.0.id');
         } catch (Throwable $e) {
-            Log::error('RecepIA: no se pudo enviar la respuesta del bot por WhatsApp.', [
+            Log::error('Pilo: no se pudo enviar la respuesta del bot por WhatsApp.', [
                 'conversation_id' => $conversation->id,
                 'error' => $e->getMessage(),
             ]);
@@ -693,7 +701,7 @@ class ReceptionistAgent
 
     protected function estimateCost(string $model, int $inputTokens, int $outputTokens): float
     {
-        $pricing = config("recepia.agent.pricing.{$model}") ?? config('recepia.agent.default_pricing');
+        $pricing = config("pilo.agent.pricing.{$model}") ?? config('pilo.agent.default_pricing');
 
         return round(
             ($inputTokens / 1_000_000 * $pricing['input']) + ($outputTokens / 1_000_000 * $pricing['output']),

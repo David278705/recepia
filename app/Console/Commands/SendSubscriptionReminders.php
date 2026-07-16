@@ -8,7 +8,7 @@ use Illuminate\Console\Command;
 
 class SendSubscriptionReminders extends Command
 {
-    protected $signature = 'recepia:recordatorios-suscripcion';
+    protected $signature = 'pilo:recordatorios-suscripcion';
 
     protected $description = 'Envía los recordatorios de renovación: antes de que venza el mes (pago manual) y durante los días de gracia.';
 

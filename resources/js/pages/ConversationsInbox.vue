@@ -29,7 +29,7 @@ let pollTimer = null;
 
 const statusLabels = { bot_activo: 'Bot activo', escalada: 'Escalada', cerrada: 'Cerrada' };
 const statusTones = { bot_activo: 'brand', escalada: 'urgent', cerrada: 'sand' };
-const originLabels = { cliente: '', bot: 'Recepia', dueno_app: 'Tú · WhatsApp', dueno_panel: 'Tú · panel' };
+const originLabels = { cliente: '', bot: 'Pilo', dueno_app: 'Tú · WhatsApp', dueno_panel: 'Tú · panel' };
 
 const isDesktop = () => window.matchMedia('(min-width: 768px)').matches;
 
@@ -339,7 +339,7 @@ watch(() => route.query.status, () => {
                             :disabled="actionBusy"
                             @click="returnToBot"
                         >
-                            Devolver al bot
+                            Devolver a Pilo
                         </button>
                     </div>
 

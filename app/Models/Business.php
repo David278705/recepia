@@ -26,6 +26,7 @@ class Business extends Model
         'monthly_price_cents',
         'daily_message_limit',
         'capabilities',
+        'show_brand',
         'tone',
         'agent_model',
         'extra_instructions',
@@ -35,7 +36,7 @@ class Business extends Model
 
     protected function casts(): array
     {
-        return ['capabilities' => 'array'];
+        return ['capabilities' => 'array', 'show_brand' => 'boolean'];
     }
 
     /**

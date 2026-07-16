@@ -192,20 +192,20 @@ onUnmounted(() => window.removeEventListener('message', handleSessionInfo));
         <header class="border-b border-sand-200 bg-white">
             <div class="mx-auto flex max-w-2xl items-center gap-2.5 px-5 py-5 sm:px-8">
                 <BrandMark :size="40" />
-                <span class="font-display text-lg font-semibold tracking-tight text-brand-950">recepia</span>
+                <span class="font-display text-lg font-semibold tracking-tight text-brand-950">pilo</span>
             </div>
         </header>
 
         <main class="mx-auto max-w-2xl px-5 py-12 sm:px-8">
             <h1 class="font-display text-3xl font-semibold tracking-tight text-brand-950">Conecta tu WhatsApp</h1>
             <p class="mt-3 text-sand-600">
-                Vas a conectar el número de WhatsApp de tu negocio con Recepia usando el proceso oficial de Meta.
-                Sigues usando tu app de WhatsApp Business con normalidad — Recepia atiende en paralelo, en el mismo número.
+                Vas a conectar el número de WhatsApp de tu negocio con Pilo usando el proceso oficial de Meta.
+                Sigues usando tu app de WhatsApp Business con normalidad — Pilo atiende en paralelo, en el mismo número.
             </p>
 
             <!-- Sin autorización -->
             <div v-if="!onboardingToken && !businessId" class="mt-8 rounded-xl border border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-800">
-                Este enlace no es válido. Pide a tu asesor de Recepia un enlace de conexión nuevo.
+                Este enlace no es válido. Pide a tu asesor de Pilo un enlace de conexión nuevo.
             </div>
 
             <!-- Config incompleta -->

@@ -121,7 +121,11 @@ const routes = [
         component: () => import('../pages/admin/AdminSystemHealth.vue'),
         meta: { requiresAuth: true, requiresAdmin: true },
     },
-    { path: '/:pathMatch(.*)*', redirect: { name: 'landing' } },
+    {
+        path: '/:pathMatch(.*)*',
+        name: 'not-found',
+        component: () => import('../pages/NotFound.vue'),
+    },
 ];
 
 const router = createRouter({

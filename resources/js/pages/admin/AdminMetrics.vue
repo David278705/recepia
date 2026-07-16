@@ -57,7 +57,7 @@ onMounted(async () => {
             <div class="grid gap-4 sm:grid-cols-2">
                 <Card>
                     <div class="flex items-center gap-2 text-xs font-semibold tracking-wide text-sand-500 uppercase">
-                        <CalendarDaysIcon class="h-4 w-4" /> Citas agendadas por el bot (mes)
+                        <CalendarDaysIcon class="h-4 w-4" /> Citas agendadas por Pilo (mes)
                     </div>
                     <p class="mt-2 font-mono text-3xl text-brand-800">{{ num(metrics.bot_appointments_this_month) }}</p>
                 </Card>
@@ -80,10 +80,10 @@ onMounted(async () => {
                                 <th class="pb-2 pr-4">Negocio</th>
                                 <th class="pb-2 pr-4">Estado</th>
                                 <th class="pb-2 pr-4 text-right">Conversaciones</th>
-                                <th class="pb-2 pr-4 text-right">Respuestas del bot</th>
+                                <th class="pb-2 pr-4 text-right">Respuestas de Pilo</th>
                                 <th class="pb-2 pr-4 text-right">Tokens</th>
                                 <th class="pb-2 pr-4 text-right">Costo est.</th>
-                                <th class="pb-2 pr-4 text-right">Citas del bot</th>
+                                <th class="pb-2 pr-4 text-right">Citas de Pilo</th>
                                 <th class="pb-2 text-right">Escaladas</th>
                             </tr>
                         </thead>
@@ -105,7 +105,7 @@ onMounted(async () => {
                     </table>
                 </div>
                 <p class="mt-3 text-xs text-sand-400">
-                    El costo es una estimación calculada con los tokens de cada respuesta del bot y la tarifa configurada del modelo (config/recepia.php).
+                    El costo es una estimación calculada con los tokens de cada respuesta de Pilo y la tarifa configurada del modelo (config/pilo.php).
                 </p>
             </Card>
         </div>

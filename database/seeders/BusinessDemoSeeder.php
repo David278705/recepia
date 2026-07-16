@@ -26,7 +26,7 @@ class BusinessDemoSeeder extends Seeder
     public function run(): void
     {
         $owner = User::updateOrCreate(
-            ['email' => 'demo@recepia.test'],
+            ['email' => 'demo@pilo.test'],
             [
                 'name' => 'Carlos Ramírez',
                 'password' => Hash::make('password'),

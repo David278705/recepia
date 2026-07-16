@@ -18,7 +18,7 @@
 /public/storage
 /storage/*.key
 /storage/pail
-/storage/app/recepia-simular
+/storage/app/pilo-simular
 /vendor
 Homestead.json
 Homestead.yaml
